@@ -1,0 +1,40 @@
+body {
+  padding: 0;
+  margin: 0;
+  font-family: "Roboto"; }
+
+#currency-list {
+  padding: 10px; }
+
+#cf-search {
+  width: 100%;
+  margin: 10px; }
+
+#cf-list label {
+  display: inline-block;
+  padding: 5px 10px;
+  margin: 3px;
+  border: 1px solid #eee;
+  width: 185px;
+  box-sizing: border-box;
+  background: #f8f8f8;
+  cursor: pointer; }
+  #cf-list label:hover {
+    background-color: #eee; }
+  #cf-list label.selected {
+    background: #689F38;
+    color: #fff;
+    border-color: #558B2F; }
+    #cf-list label.selected:hover {
+      background: #73af3f; }
+  #cf-list label input {
+    display: none; }
+  #cf-list label .code {
+    font-weight: 500; }
+  #cf-list label .name {
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; }
+
+/*# sourceMappingURL=popup.css.map */
