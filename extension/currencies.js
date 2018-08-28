@@ -1,5 +1,5 @@
-var currenciesJSON = 
-{	
+var currenciesJSON =
+{
 	AFN: { name: 'Afghan Afghani' },
 	ALL: { name: 'Albanian Lek' },
 	DZD: { name: 'Algerian Dinar' },
