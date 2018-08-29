@@ -8,12 +8,14 @@ table {
   padding: 3px;
   border-spacing: 3px;
   font-size: 15px;
+  background-color: lightpink;
 }
 
 .currencyBox {
+  width: 100%;
   padding: 5px;
   border-spacing: 5px;
-  border-width: 3px;
+  border-width: 1px;
   border-color: purple;
   background-color: #f8f8f8;
   color: purple;
@@ -21,6 +23,7 @@ table {
 }
 
 .selectedCurrencyBox {
+    width: 100%;
     padding: 5px;
     border-width: 1px;
     border-color: green;
