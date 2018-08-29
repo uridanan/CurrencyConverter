@@ -60,3 +60,39 @@ function sendMessage(msg, url, cat){
     chrome.tabs.sendMessage(activeTab.id, {"message": msg, "url": url, "cat": cat});
   });
 }
+
+
+function populateRatesTable() {
+  var currencies = document.getElementById("currenciesTable");
+  //document.querySelectorAll('[data-foo="value"]');
+  var rates = document.getElementById("ratesTable");
+  var rowIndex = 0;
+  var cellIndex = 0;
+  var row = table.insertRow(rowIndex++); //init table with first row
+  for (var currency in jsonInput)
+  {
+    //Option element is to create a dropdown
+    //var option = document.createElement('option');
+    //option.value = currency;
+    //option.text = currenciesJSON[currency].name;
+    //select_currency.appendChild(option);
+
+    var cSymbol = currency;
+    var cName = jsonInput[currency].name;
+
+
+    var cell = row.insertCell(cellIndex++);
+    var button = createCurrencyButton(cSymbol,cName);
+    cell.appendChild(button);
+
+    if(cellIndex == rowSize){
+      row = table.insertRow(rowIndex++);
+      cellIndex = 0;
+    }
+
+    //var cell = row.insertCell(cellIndex++);
+    //var button = createCurrencyButton(cSymbol,cName);
+    //cell.appendChild(button);
+    //cell.innerHTML = getCurrencyButtonHTML(cSymbol,cName);
+  }
+}
