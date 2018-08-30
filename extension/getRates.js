@@ -47,11 +47,6 @@ function getRateRequestURL(from,to){
   return url;
 }
 
-
-//This is the wrong approach.
-//When a new currency is selected, it should be added to the ratesTable and getRate requests should be triggered for all the currency pairs.
-//Every selection should be added to local storage so selection can be marked and currency added to the rates when starting a new session.
-//Use the full currency list with symbols. Currency names should be name (symbol)
 function populateRatesTable() {
   var currencies = document.getElementById("currenciesTable");
   var selectedCurrencies = currencies.querySelectorAll('[selected="1"]');
@@ -63,13 +58,46 @@ function addCurrencyToRatesTable(symbol){
   var input = row.insertCell(0);
   var currency = row.insertCell(1);
   var sym = symbol;
-  var name = currenciesJSON[sym].name;
+  var name = getCurrencyDisplayName(sym);
+  row.setAttribute("currency",sym);
   currency.innerHTML = sym+": "+name;
 }
 
-getRate("EUR","USD")
+function removeCurrencyFromRatesTable(symbol){
+  var rates = document.getElementById("ratesTable");
+  var row = rates.querySelector('[currency="'+symbol+'"]');
+  rates.deleteRow(row.rowIndex);
+}
 
+function getCurrencyDisplayName(id){
+  var symbol = "(" + id + ")";
+  if (currenciesJSON[id].currencySymbol != undefined){
+    symbol = "(" + currenciesJSON[id].currencySymbol + ")";
+  }
+  var name = currenciesJSON[id].currencyName + symbol;
+  return name;
+}
 
+var exRates = {};
+var r = getRate("EUR","USD")
+addExRate("EUR","USD",1.2)
+
+// TODO:
+// store to local storage for persistency
+// add input box in rates ratesTable
+// store exchange pairs 2-way
+//When a new currency is selected, it should be added to the ratesTable and getRate requests should be triggered for all the currency pairs.
+//Every selection should be added to local storage so selection can be marked and currency added to the rates when starting a new session.
+
+function addExRate(from,to,rate){
+  if(rate == 0 || rate == undefined){
+    return;
+  }
+  fromto = from+"_"+to;
+  tofrom = to+"_"+from;
+  exRates[fromto] = rate;
+  exRates[tofrom] = 1/rate;
+}
 
 
 

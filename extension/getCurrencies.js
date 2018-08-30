@@ -14,7 +14,7 @@ function populateCurrenciesTable(jsonInput,rowSize) {
     //select_currency.appendChild(option);
 
     var cSymbol = currency;
-    var cName = jsonInput[currency].name;
+    var cName = jsonInput[currency].currencyName;
 
 
     var cell = row.insertCell(cellIndex++);
@@ -33,24 +33,24 @@ function populateCurrenciesTable(jsonInput,rowSize) {
   }
 }
 
-function createCurrencyButton(symbol, name){
+function createCurrencyButton(symbol){
   var btn = document.createElement('button');
   btn.className = "currencyBox";
   btn.id = symbol;
   btn.value = symbol;
   btn.setAttribute('selected',0);
   btn.onclick = toggleSelect;
-  btn.innerHTML = getCurrencySymbolHTML(symbol)+"<br>"+getCurrencyNameHTML(name);
+  btn.innerHTML = getCurrencySymbolHTML(symbol)+"<br>"+getCurrencyNameHTML(symbol);
   return btn;
 }
 
-function getCurrencyButtonHTML(symbol, name){
-  html = "<button class='currencyBox' id='"+symbol+"' value='"+symbol+"' selected=0 onclick='toggleSelect()'>"+getCurrencySymbolHTML(symbol)+"<br>"+getCurrencyNameHTML(name)+"<button>";
+function getCurrencyButtonHTML(symbol){
+  html = "<button class='currencyBox' id='"+symbol+"' value='"+symbol+"' selected=0 onclick='toggleSelect()'>"+getCurrencySymbolHTML(symbol)+"<br>"+getCurrencyNameHTML(symbol)+"<button>";
   return html;
 }
 
-function getCurrencyNameHTML(name){
-  return "<span class='currencyName'>"+name+"</span>";
+function getCurrencyNameHTML(symbol){
+  return "<span class='currencyName'>"+getCurrencyDisplayName(symbol)+"</span>";
 }
 
 function getCurrencySymbolHTML(symbol){
@@ -65,11 +65,13 @@ function toggleSelect(){
   if(status == "0"){
     btn.className = "selectedCurrencyBox";
     btn.setAttribute('selected',1);
+    addCurrencyToRatesTable(btn.id);
   } else {
     btn.className = "currencyBox";
     btn.setAttribute('selected',0);
+    removeCurrencyFromRatesTable(btn.id);
   }
-  addCurrencyToRatesTable(btn.id);
+
 }
 
 populateCurrenciesTable(currenciesJSON,3);
