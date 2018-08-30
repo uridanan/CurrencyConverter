@@ -69,6 +69,7 @@ function toggleSelect(){
     btn.className = "currencyBox";
     btn.setAttribute('selected',0);
   }
+  addCurrencyToRatesTable(btn.id);
 }
 
 populateCurrenciesTable(currenciesJSON,3);
