@@ -65,11 +65,11 @@ function toggleSelect(){
   if(status == "0"){
     btn.className = "selectedCurrencyBox";
     btn.setAttribute('selected',1);
-    addCurrencyToRatesTable(btn.id);
+    selectCurrency(btn.id);
   } else {
     btn.className = "currencyBox";
     btn.setAttribute('selected',0);
-    removeCurrencyFromRatesTable(btn.id);
+    removeCurrency(btn.id);
   }
 
 }

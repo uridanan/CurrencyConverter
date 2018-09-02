@@ -25,6 +25,7 @@ function processResponse(response,from,to){
   //{EUR_USD: {val: 1.161595}}
   rate = extractRate(response,from,to);
   console.log(rate);
+  addExRate(from,to,rate);
 
   document.getElementById("demo").innerHTML = "Rate from EUR to USD: " + rate;
   //sendMessage("searchresult", target, cat);
@@ -61,6 +62,14 @@ function addCurrencyToRatesTable(symbol){
   var name = getCurrencyDisplayName(sym);
   row.setAttribute("currency",sym);
   currency.innerHTML = sym+": "+name;
+  input.innerHTML = '<input type="text" id="amount" value="" width="100%" onKeyPress="update()">';
+}
+
+function update(){
+  console.log(event.key);
+  var input = document.getElementById("currenciesTable"); //Figure out how to get the right element then call this.value
+  //On update, set the value in all the other boxes
+  console.log(this.value);
 }
 
 function removeCurrencyFromRatesTable(symbol){
@@ -79,8 +88,9 @@ function getCurrencyDisplayName(id){
 }
 
 var exRates = {};
-var r = getRate("EUR","USD")
-addExRate("EUR","USD",1.2)
+var selectedCurrencies = {};
+//var r = getRate("EUR","USD")
+//addExRate("EUR","USD",1.2)
 
 // TODO:
 // store to local storage for persistency
@@ -100,6 +110,26 @@ function addExRate(from,to,rate){
 }
 
 
+function addSelectedCurrency(currency){
+  for (var c in selectedCurrencies){
+    getRate(currency,c);
+  }
+  selectedCurrencies[currency] = currency;
+}
+
+function removeFromSelected(currency){
+  delete selectedCurrencies[currency];
+}
+
+function selectCurrency(currency){
+  addCurrencyToRatesTable(currency);
+  addSelectedCurrency(currency);
+}
+
+function removeCurrency(currency){
+  removeCurrencyFromRatesTable(currency);
+  removeFromSelected(currency);
+}
 
 
 function sendMessage(msg, url, cat){
