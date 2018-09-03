@@ -62,14 +62,36 @@ function addCurrencyToRatesTable(symbol){
   var name = getCurrencyDisplayName(sym);
   row.setAttribute("currency",sym);
   currency.innerHTML = sym+": "+name;
-  input.innerHTML = '<input type="text" id="amount" value="" width="100%" onKeyPress="update()">';
+  input.innerHTML = '<input type="text" id="amount" value="" width="100%" onKeyUp="update()">';
 }
 
 function update(){
-  console.log(event.key);
-  var input = document.getElementById("currenciesTable"); //Figure out how to get the right element then call this.value
+  //console.log(event.key);
+  var input = event.currentTarget;
+  var value = input.value;
+  console.log(value);
+  var baseCurrency = input.parentNode.parentNode.getAttribute("currency");
+  console.log(baseCurrency);
+
   //On update, set the value in all the other boxes
-  console.log(this.value);
+  for (c in selectedCurrencies){
+    if (c.localeCompare(baseCurrency) != 0){
+      console.log(c);
+      //Get rates
+      rate = exRates[baseCurrency+"_"+c];
+      //Compute amount
+      amount = value * rate;
+      //Get input element and set value
+      var row = getCurrencyRow(c);
+      row.children[0].children[0].value = amount.toFixed(2);;
+    }
+  }
+}
+
+function getCurrencyRow(symbol){
+  var rates = document.getElementById("ratesTable");
+  var row = rates.querySelector('[currency="'+symbol+'"]');
+  return row;
 }
 
 function removeCurrencyFromRatesTable(symbol){
@@ -94,10 +116,8 @@ var selectedCurrencies = {};
 
 // TODO:
 // store to local storage for persistency
-// add input box in rates ratesTable
-// store exchange pairs 2-way
-//When a new currency is selected, it should be added to the ratesTable and getRate requests should be triggered for all the currency pairs.
 //Every selection should be added to local storage so selection can be marked and currency added to the rates when starting a new session.
+//When a new currency is selectd, amount should be automatically calculated
 
 function addExRate(from,to,rate){
   if(rate == 0 || rate == undefined){
