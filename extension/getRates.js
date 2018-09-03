@@ -83,7 +83,7 @@ function update(){
       amount = value * rate;
       //Get input element and set value
       var row = getCurrencyRow(c);
-      row.children[0].children[0].value = amount.toFixed(2);;
+      row.children[0].children[0].value = amount.toFixed(2);
     }
   }
 }
@@ -115,9 +115,10 @@ var selectedCurrencies = {};
 //addExRate("EUR","USD",1.2)
 
 // TODO:
-// store to local storage for persistency
+// store to local storage for persistency: localStorage.setItem("lastname", "Smith");
 //Every selection should be added to local storage so selection can be marked and currency added to the rates when starting a new session.
 //When a new currency is selectd, amount should be automatically calculated
+//Fetch rates and compute values when loading from local storage
 
 function addExRate(from,to,rate){
   if(rate == 0 || rate == undefined){
