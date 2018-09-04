@@ -39,6 +39,7 @@ function createCurrencyButton(symbol){
   btn.id = symbol;
   btn.value = symbol;
   btn.setAttribute('selected',0);
+  btn.setAttribute('currency',symbol);
   btn.onclick = toggleSelect;
   btn.innerHTML = getCurrencySymbolHTML(symbol)+"<br>"+getCurrencyNameHTML(symbol);
   return btn;
@@ -63,15 +64,56 @@ function toggleSelect(){
   var btn = this;
   var status = btn.getAttribute('selected');
   if(status == "0"){
+    selectCurrencyBox(btn);
+  } else {
+    unSelectCurrencyBox(btn);
+  }
+}
+
+function findCurrencyButton(currency){
+  var table = document.getElementById("currenciesTable");
+  btn = table.querySelectorAll('button[currency="'+currency+'"]');
+  //btn = table.querySelectorAll('button');
+  return btn[0];
+}
+
+function selectCurrencyButton(currency){
+  var btn = findCurrencyButton(currency);
+  selectCurrencyBox(btn);
+}
+
+function selectCurrencyBox(btn){
+  if (btn != null && btn != undefined){
     btn.className = "selectedCurrencyBox";
     btn.setAttribute('selected',1);
     selectCurrency(btn.id);
-  } else {
+  }
+}
+
+function unSelectCurrencyBox(btn){
+  if (btn != null && btn != undefined){
     btn.className = "currencyBox";
     btn.setAttribute('selected',0);
     removeCurrency(btn.id);
   }
+}
 
+function loadSelectedCurrencies(){
+  //Load values from local storage
+  json = localStorage.getItem("selectedCurrencies");
+  if (json == undefined){
+    return;
+  }
+  var currencies = JSON.parse(json);
+  if (currencies == undefined){
+    return;
+  }
+
+  //Populate rates table
+  for (c in currencies){
+    selectCurrencyButton(c);
+  }
 }
 
 populateCurrenciesTable(currenciesJSON,3);
+loadSelectedCurrencies();

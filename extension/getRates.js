@@ -111,6 +111,8 @@ function getCurrencyDisplayName(id){
 
 var exRates = {};
 var selectedCurrencies = {};
+
+//loadSelectedCurrencies();
 //var r = getRate("EUR","USD")
 //addExRate("EUR","USD",1.2)
 
@@ -130,16 +132,24 @@ function addExRate(from,to,rate){
   exRates[tofrom] = 1/rate;
 }
 
+function saveSelectedCurrencies(){
+  json = JSON.stringify(selectedCurrencies);
+  localStorage.setItem("selectedCurrencies", json);
+}
+
+
 
 function addSelectedCurrency(currency){
   for (var c in selectedCurrencies){
     getRate(currency,c);
   }
   selectedCurrencies[currency] = currency;
+  saveSelectedCurrencies();
 }
 
 function removeFromSelected(currency){
   delete selectedCurrencies[currency];
+  saveSelectedCurrencies();
 }
 
 function selectCurrency(currency){
