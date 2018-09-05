@@ -26,7 +26,6 @@ function processResponse(response,from,to){
   rate = extractRate(response,from,to);
   console.log(rate);
   addExRate(from,to,rate);
-
   document.getElementById("demo").innerHTML = "Rate from EUR to USD: " + rate;
   //sendMessage("searchresult", target, cat);
 }
@@ -63,6 +62,9 @@ function addCurrencyToRatesTable(symbol){
   row.setAttribute("currency",sym);
   currency.innerHTML = sym+": "+name;
   input.innerHTML = '<input type="text" id="amount" value="" width="100%" onKeyUp="update()">';
+
+  //Init value
+  setExRateValue(sym);
 }
 
 function update(){
@@ -73,16 +75,26 @@ function update(){
   var baseCurrency = input.parentNode.parentNode.getAttribute("currency");
   console.log(baseCurrency);
 
+  //Update global variables
+  activeCurrency = baseCurrency;
+  baseAmount = value;
+
   //On update, set the value in all the other boxes
   for (c in selectedCurrencies){
-    if (c.localeCompare(baseCurrency) != 0){
-      console.log(c);
-      //Get rates
-      rate = exRates[baseCurrency+"_"+c];
-      //Compute amount
-      amount = value * rate;
-      //Get input element and set value
-      var row = getCurrencyRow(c);
+    setExRateValue(c);
+  }
+}
+
+function setExRateValue(newCurrency){
+  if (newCurrency.localeCompare(activeCurrency) != 0){
+    console.log(newCurrency);
+    //Get rates
+    var rate = exRates[activeCurrency+"_"+newCurrency];
+    //Compute amount
+    if (rate != undefined && baseAmount != undefined){
+      var amount = baseAmount * rate;
+      //Set value
+      var row = getCurrencyRow(newCurrency);
       row.children[0].children[0].value = amount.toFixed(2);
     }
   }
@@ -111,16 +123,21 @@ function getCurrencyDisplayName(id){
 
 var exRates = {};
 var selectedCurrencies = {};
+var activeCurrency = undefined;
+var baseAmount = 0;
 
 //loadSelectedCurrencies();
 //var r = getRate("EUR","USD")
 //addExRate("EUR","USD",1.2)
 
 // TODO:
-// store to local storage for persistency: localStorage.setItem("lastname", "Smith");
-//Every selection should be added to local storage so selection can be marked and currency added to the rates when starting a new session.
 //When a new currency is selectd, amount should be automatically calculated
-//Fetch rates and compute values when loading from local storage
+//Refactor using classes
+//Combine in one file
+//Improve layout
+//Sort currencies
+//Search currencies
+//Send event when new rate fetched. When catch event to compute value for newly added currency
 
 function addExRate(from,to,rate){
   if(rate == 0 || rate == undefined){
@@ -136,8 +153,6 @@ function saveSelectedCurrencies(){
   json = JSON.stringify(selectedCurrencies);
   localStorage.setItem("selectedCurrencies", json);
 }
-
-
 
 function addSelectedCurrency(currency){
   for (var c in selectedCurrencies){
@@ -205,3 +220,21 @@ function foo(){
     //cell.innerHTML = getCurrencyButtonHTML(cSymbol,cName);
   }
 }
+
+
+
+//Class example
+//class User {
+//
+//  constructor(name) {
+//    this.name = name;
+//  }
+//
+//  sayHi() {
+//    alert(this.name);
+//  }
+//
+//}
+//
+//let user = new User("John");
+//user.sayHi();
