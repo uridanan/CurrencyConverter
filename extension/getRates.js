@@ -26,8 +26,6 @@ function processResponse(response,from,to){
   rate = extractRate(response,from,to);
   console.log(rate);
   addExRate(from,to,rate);
-  document.getElementById("demo").innerHTML = "Rate from EUR to USD: " + rate;
-  //sendMessage("searchresult", target, cat);
 }
 
 function extractRate(response,from,to){
@@ -63,7 +61,7 @@ function addCurrencyToRatesTable(symbol){
   currency.innerHTML = sym+": "+name;
   input.innerHTML = '<input type="text" id="amount" value="" width="100%" onKeyUp="update()">';
 
-  //Init value
+  //Init value, just in case this happens after the getRate request returns
   setExRateValue(sym);
 }
 
@@ -137,7 +135,7 @@ var baseAmount = 0;
 //Improve layout
 //Sort currencies
 //Search currencies
-//Send event when new rate fetched. When catch event to compute value for newly added currency
+//Send event when new rate fetched. Then catch event to compute value for newly added currency
 
 function addExRate(from,to,rate){
   if(rate == 0 || rate == undefined){
@@ -147,6 +145,10 @@ function addExRate(from,to,rate){
   tofrom = to+"_"+from;
   exRates[fromto] = rate;
   exRates[tofrom] = 1/rate;
+
+  if(to.localeCompare(activeCurrency) == 0){
+    setExRateValue(from);
+  }
 }
 
 function saveSelectedCurrencies(){
@@ -176,15 +178,6 @@ function removeCurrency(currency){
   removeCurrencyFromRatesTable(currency);
   removeFromSelected(currency);
 }
-
-
-function sendMessage(msg, url, cat){
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    var activeTab = tabs[0];
-    chrome.tabs.sendMessage(activeTab.id, {"message": msg, "url": url, "cat": cat});
-  });
-}
-
 
 
 
@@ -238,3 +231,24 @@ function foo(){
 //
 //let user = new User("John");
 //user.sayHi();
+
+//sendMessage({"message": "exRateAdded", "from": from, "to": to});
+function sendMessage(msg){
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    var activeTab = tabs[0];
+    chrome.tabs.sendMessage(activeTab.id, msg);
+  });
+}
+
+
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    if( request.message == "exRateAdded" ){
+      console.log("Message received: exRateAdded");
+      var from = request.from;
+      var to = request.to;
+      var rate = request.rate;
+      setExRateValue(from);
+    }
+  }
+);
