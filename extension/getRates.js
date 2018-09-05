@@ -129,13 +129,11 @@ var baseAmount = 0;
 //addExRate("EUR","USD",1.2)
 
 // TODO:
-//When a new currency is selectd, amount should be automatically calculated
 //Refactor using classes
 //Combine in one file
 //Improve layout
 //Sort currencies
 //Search currencies
-//Send event when new rate fetched. Then catch event to compute value for newly added currency
 
 function addExRate(from,to,rate){
   if(rate == 0 || rate == undefined){
