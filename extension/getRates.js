@@ -231,22 +231,22 @@ function foo(){
 //user.sayHi();
 
 //sendMessage({"message": "exRateAdded", "from": from, "to": to});
-function sendMessage(msg){
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    var activeTab = tabs[0];
-    chrome.tabs.sendMessage(activeTab.id, msg);
-  });
-}
+//function sendMessage(msg){
+//  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+//    var activeTab = tabs[0];
+//    chrome.tabs.sendMessage(activeTab.id, msg);
+//  });
+//}
 
 
-chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
-    if( request.message == "exRateAdded" ){
-      console.log("Message received: exRateAdded");
-      var from = request.from;
-      var to = request.to;
-      var rate = request.rate;
-      setExRateValue(from);
-    }
-  }
-);
+//chrome.runtime.onMessage.addListener(
+//  function(request, sender, sendResponse) {
+//    if( request.message == "exRateAdded" ){
+//      console.log("Message received: exRateAdded");
+//      var from = request.from;
+//      var to = request.to;
+//      var rate = request.rate;
+//      setExRateValue(from);
+//    }
+//  }
+//);

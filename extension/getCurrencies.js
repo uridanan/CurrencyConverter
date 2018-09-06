@@ -5,14 +5,16 @@ function populateCurrenciesTable(jsonInput,rowSize) {
   var rowIndex = 0;
   var cellIndex = 0;
   var row = table.insertRow(rowIndex++); //init table with first row
-  for (var currency in jsonInput)
+  var keys  = Object.keys(jsonInput);
+  keys.sort();
+  for (var i in keys)
   {
     //Option element is to create a dropdown
     //var option = document.createElement('option');
     //option.value = currency;
     //option.text = currenciesJSON[currency].name;
     //select_currency.appendChild(option);
-
+    var currency = keys[i];
     var cSymbol = currency;
     var cName = jsonInput[currency].currencyName;
 
