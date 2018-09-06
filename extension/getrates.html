@@ -6,21 +6,24 @@
   </head>
   <body>
 
-    <div id="marquee">
-      <img src="marquee.png" height="100px" width="300px">
+    <!-- Tab links -->
+    <div class="tab">
+      <!-- <img src="marquee.png" height="100px" width="300px"> -->
+      <button class="tablinks" onclick="showTab(event, 'Exchange')" id="defaultTab">Exchange</button>
+      <button class="tablinks" onclick="showTab(event, 'Currencies')">Currencies</button>
     </div>
 
-    <div id="rates">
+    <!-- Tab content -->
+    <div id="Exchange" class="tabcontent">
       <table id="ratesTable">
       </table>
     </div>
 
-    <div id="currencies">
+    <div id="Currencies" class="tabcontent">
       <table id="currenciesTable">
       </table>
     </div>
 
-    <div id="demo"><div>
 
   <script src="currencies.js" charset="UTF-8"></script>
   <script src="getRates.js" charset="UTF-8"></script>

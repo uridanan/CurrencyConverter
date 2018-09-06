@@ -1,6 +1,12 @@
 //getRates.js
-
 //https://free.currencyconverterapi.com/api/v5/convert?q=EUR_USD&compact=y
+
+// TODO:
+//Refactor using classes
+//Combine in one file
+//Improve layout
+//Search currencies
+
 //Get exchange rate from api
 function getRate(from,to){
   var url = getRateRequestURL(from,to);
@@ -128,12 +134,7 @@ var baseAmount = 0;
 //var r = getRate("EUR","USD")
 //addExRate("EUR","USD",1.2)
 
-// TODO:
-//Refactor using classes
-//Combine in one file
-//Improve layout
-//Sort currencies
-//Search currencies
+
 
 function addExRate(from,to,rate){
   if(rate == 0 || rate == undefined){
@@ -177,7 +178,32 @@ function removeCurrency(currency){
   removeFromSelected(currency);
 }
 
+function showTab(evt, tabName) {
+    // Declare all variables
+    var i, tabcontent, tablinks;
 
+    // Get all elements with class="tabcontent" and hide them
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+
+    // Get all elements with class="tablinks" and remove the class "active"
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+
+    // Show the current tab, and add an "active" class to the button that opened the tab
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
+
+function selectDefaultTab(){
+  document.getElementById("defaultTab").click();
+}
+
+selectDefaultTab();
 
 function foo(){
   var rates = document.getElementById("ratesTable");
