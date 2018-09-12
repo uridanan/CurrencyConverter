@@ -1,29 +1,33 @@
 <!doctype html>
 <html>
   <head>
-    <title>Links 4 Next</title>
+    <title>Currency Converter</title>
+    <link rel="stylesheet" type="text/css" href="popup.css">
   </head>
   <body>
 
-    <div id="marquee">
-      <img src="marquee.png" height="100px" width="300px">
+    <!-- Tab links -->
+    <div class="tab">
+      <!-- <img src="marquee.png" height="100px" width="300px"> -->
+      <button class="tablinks" onclick="showTab(event, 'Exchange')" id="defaultTab">Exchange</button>
+      <button class="tablinks" onclick="showTab(event, 'Currencies')">Currencies</button>
     </div>
 
-    <div id="shoppingbag" align="center">
-      <span>Your shopping bag is empty</span>
+    <!-- Tab content -->
+    <div id="Exchange" class="tabcontent">
+      <table id="ratesTable">
+      </table>
     </div>
 
-    <table border="0" width="100%">
-      <tr>
-        <td width="50%">links4next@gmail.com</td>
-        <td width="50%" align="right">
-          <div id="version" align="right">
-            Links4Next v0.4
-          </div>
-        </td>
-      </tr>
-    </table>
-  <script src="common.js"></script>
-  <script src="popup.js"></script>
+    <div id="Currencies" class="tabcontent">
+      <table id="currenciesTable">
+      </table>
+    </div>
+
+
+  <script src="currencies.js" charset="UTF-8"></script>
+  <script src="getRates.js" charset="UTF-8"></script>
+  <script src="getCurrencies.js" charset="UTF-8"></script>
+
   </body>
 </html>

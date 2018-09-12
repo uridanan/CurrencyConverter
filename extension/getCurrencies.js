@@ -117,5 +117,4 @@ function loadSelectedCurrencies(){
   }
 }
 
-populateCurrenciesTable(currenciesJSON,3);
-loadSelectedCurrencies();
+main();

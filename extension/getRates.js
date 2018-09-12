@@ -7,6 +7,18 @@
 //Improve layout
 //Search currencies
 
+var exRates = {};
+var selectedCurrencies = {};
+var activeCurrency = undefined;
+var baseAmount = 0;
+
+
+function main(){
+  populateCurrenciesTable(currenciesJSON,3);
+  loadSelectedCurrencies();
+  selectDefaultTab();
+}
+
 //Get exchange rate from api
 function getRate(from,to){
   var url = getRateRequestURL(from,to);
@@ -125,17 +137,6 @@ function getCurrencyDisplayName(id){
   return name;
 }
 
-var exRates = {};
-var selectedCurrencies = {};
-var activeCurrency = undefined;
-var baseAmount = 0;
-
-//loadSelectedCurrencies();
-//var r = getRate("EUR","USD")
-//addExRate("EUR","USD",1.2)
-
-
-
 function addExRate(from,to,rate){
   if(rate == 0 || rate == undefined){
     return;
@@ -178,6 +179,8 @@ function removeCurrency(currency){
   removeFromSelected(currency);
 }
 
+
+//----------------------------- Tabs =============================
 function showTab(evt, tabName) {
     // Declare all variables
     var i, tabcontent, tablinks;
@@ -203,40 +206,20 @@ function selectDefaultTab(){
   document.getElementById("defaultTab").click();
 }
 
-selectDefaultTab();
-
-function foo(){
-  var rates = document.getElementById("ratesTable");
-  var rowIndex = 0;
-  var cellIndex = 0;
-  var row = table.insertRow(rowIndex++); //init table with first row
-  for (var currency in jsonInput)
-  {
-    //Option element is to create a dropdown
-    //var option = document.createElement('option');
-    //option.value = currency;
-    //option.text = currenciesJSON[currency].name;
-    //select_currency.appendChild(option);
-
-    var cSymbol = currency;
-    var cName = jsonInput[currency].name;
+//-----------------------------Refactor into classes=============================
 
 
-    var cell = row.insertCell(cellIndex++);
-    var button = createCurrencyButton(cSymbol,cName);
-    cell.appendChild(button);
 
-    if(cellIndex == rowSize){
-      row = table.insertRow(rowIndex++);
-      cellIndex = 0;
-    }
+class exchangeRatesTable {
+  constructor(name) {
+    this.name = name;
+  }
 
-    //var cell = row.insertCell(cellIndex++);
-    //var button = createCurrencyButton(cSymbol,cName);
-    //cell.appendChild(button);
-    //cell.innerHTML = getCurrencyButtonHTML(cSymbol,cName);
+  sayHi() {
+    alert(this.name);
   }
 }
+
 
 
 
