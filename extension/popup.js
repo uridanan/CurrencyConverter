@@ -7,13 +7,21 @@
 //Improve layout
 //Search currencies
 var selectedCurrencies = new persistentList("selectedCurrencies");
+var ratesTable = new exchangeRatesTable("ratesTable");
+var rates = new exchangeRates();
 
 function main(){
-
+  selectedCurrencies.load();
+  populateCurrenciesTable(currenciesJSON,3);
+  selectDefaultTab();
 }
 
 function getKey(from,to){
   return from+"_"+to;
+}
+
+function update(){
+  ratesTable.update(event);
 }
 
 //A class to store the selected currencies
@@ -62,7 +70,7 @@ class exchangeRates {
     this.mExchangeRates = {};
   }
 
-  function addExchangeRate(from,to,rate){
+  function add(from,to,rate){
     if(rate == 0 || rate == undefined){
       return;
     }
@@ -72,108 +80,97 @@ class exchangeRates {
     this.mExchangeRates[tofrom] = 1/rate;
 
     if(to.localeCompare(activeCurrency) == 0){
-      setExRateValue(from);
+      setExRateValue(from);   //TODO: this is not part of the class
     }
   }
 
-  function getExchangeRate(from,to){
-    return this.mExchangeRates[from+"_"+to];
+  function get(from,to){
+    return this.mExchangeRates[getKey(from,to)];
   }
 }
 
 
 class exchangeRatesTable {
-  constructor() {
 
+  constructor(id) {
+    this.id = id;
+    this.activeCurrency = undefined;
+    this.baseAmount = 0;
+  }
+
+  function getElement(){
+    return document.getElementById(this.id);
   }
 
   function addCurrency(symbol){
-    var rates = document.getElementById("ratesTable");
+    var rates = this.getElement();
     var row = rates.insertRow(0);
     var input = row.insertCell(0);
     var currency = row.insertCell(1);
-    var sym = symbol;
-    var name = getCurrencyDisplayName(sym);
-    row.setAttribute("currency",sym);
-    currency.innerHTML = sym+": "+name;
+    var name = getCurrencyDisplayName(symbol);   //TODO: this is not part of the class
+    row.setAttribute("currency",symbol);
+    currency.innerHTML = symbol+": "+name;
     input.innerHTML = '<input type="text" id="amount" value="" width="100%" onKeyUp="update()">';
 
     //Init value, just in case this happens after the getRate request returns
-    setExRateValue(sym);
+    ratesTable.computeValue(symbol);
   }
 
-  function removeCurrency(currency){
-
+  function removeCurrency(symbol){
+    var row = this.getCurrencyRow(symbol);
+    rates.deleteRow(row.rowIndex);
   }
 
-  function update(){
+  function update(e){
     //console.log(event.key);
-    var input = event.currentTarget;
+    var input = e.currentTarget;
     var value = input.value;
     console.log(value);
     var baseCurrency = input.parentNode.parentNode.getAttribute("currency");
     console.log(baseCurrency);
 
     //Update global variables
-    activeCurrency = baseCurrency;
-    baseAmount = value;
+    this.activeCurrency = baseCurrency;
+    this.baseAmount = value;
 
     //On update, set the value in all the other boxes
     for (c in selectedCurrencies){
-      setExRateValue(c);
+      ratesTable.computeValue(c);
     }
   }
 
   function getCurrencyRow(symbol){
-    var rates = document.getElementById("ratesTable");
+    var rates = this.getElement();
     var row = rates.querySelector('[currency="'+symbol+'"]');
     return row;
   }
 
-  function removeCurrencyFromRatesTable(symbol){
-    var rates = document.getElementById("ratesTable");
-    var row = rates.querySelector('[currency="'+symbol+'"]');
-    rates.deleteRow(row.rowIndex);
+  function setValue(symbol,value){
+    var row = this.getCurrencyRow(symbol);
+    row.children[0].children[0].value = value.toFixed(2);
   }
-}
 
-
-//============================================================================
-
-
-
-
-function setExRateValue(newCurrency){
-  if (newCurrency.localeCompare(activeCurrency) != 0){
-    console.log(newCurrency);
-    //Get rates
-    var rate = exRates[activeCurrency+"_"+newCurrency];
-    //Compute amount
-    if (rate != undefined && baseAmount != undefined){
-      var amount = baseAmount * rate;
-      //Set value
-      var row = getCurrencyRow(newCurrency);
-      row.children[0].children[0].value = amount.toFixed(2);
+  function computeValue(selectedCurrency){
+    if (selectedCurrency.localeCompare(activeCurrency) != 0){
+      console.log(selectedCurrency);
+      //Get rates
+      var rate = rates.get(activeCurrency,selectedCurrency);
+      //Compute amount
+      if (rate != undefined && this.baseAmount != undefined){
+        var amount = this.baseAmount * rate;
+        //Set value
+        this.setValue(selectCurrency,amount);
+      }
     }
   }
 }
 
 
 
-
 //============================================================================
 //============================================================================
+//============================================================================
 
-var exRates = {};
-var activeCurrency = undefined;
-var baseAmount = 0;
-
-
-function main(){
-  populateCurrenciesTable(currenciesJSON,3);
-  loadSelectedCurrencies();
-  selectDefaultTab();
-}
 
 //Get exchange rate from api
 function getRate(from,to){
@@ -207,10 +204,6 @@ function extractRate(response,from,to){
   var myObj = JSON.parse(response);
   var rate = myObj[currencyPair].val;
   return rate;
-}
-
-function getCurrencyPair(from,to){
-  return from+"_"+to;
 }
 
 function getRateRequestURL(from,to){
@@ -281,3 +274,120 @@ function selectDefaultTab(){
 }
 
 //-----------------------------Refactor into classes=============================
+
+function populateCurrenciesTable(jsonInput,rowSize) {
+  var table = document.getElementById("currenciesTable");
+  var rowIndex = 0;
+  var cellIndex = 0;
+  var row = table.insertRow(rowIndex++); //init table with first row
+  var keys  = Object.keys(jsonInput);
+  keys.sort();
+  for (var i in keys)
+  {
+    //Option element is to create a dropdown
+    //var option = document.createElement('option');
+    //option.value = currency;
+    //option.text = currenciesJSON[currency].name;
+    //select_currency.appendChild(option);
+    var currency = keys[i];
+    var cSymbol = currency;
+    var cName = jsonInput[currency].currencyName;
+
+
+    var cell = row.insertCell(cellIndex++);
+    var button = createCurrencyButton(cSymbol,cName);
+    cell.appendChild(button);
+
+    if(cellIndex == rowSize){
+      row = table.insertRow(rowIndex++);
+      cellIndex = 0;
+    }
+
+    //var cell = row.insertCell(cellIndex++);
+    //var button = createCurrencyButton(cSymbol,cName);
+    //cell.appendChild(button);
+    //cell.innerHTML = getCurrencyButtonHTML(cSymbol,cName);
+  }
+}
+
+function createCurrencyButton(symbol){
+  var btn = document.createElement('button');
+  btn.className = "currencyBox";
+  btn.id = symbol;
+  btn.value = symbol;
+  btn.setAttribute('selected',0);
+  btn.setAttribute('currency',symbol);
+  btn.onclick = toggleSelect;
+  btn.innerHTML = getCurrencySymbolHTML(symbol)+"<br>"+getCurrencyNameHTML(symbol);
+  return btn;
+}
+
+function getCurrencyButtonHTML(symbol){
+  html = "<button class='currencyBox' id='"+symbol+"' value='"+symbol+"' selected=0 onclick='toggleSelect()'>"+getCurrencySymbolHTML(symbol)+"<br>"+getCurrencyNameHTML(symbol)+"<button>";
+  return html;
+}
+
+function getCurrencyNameHTML(symbol){
+  return "<span class='currencyName'>"+getCurrencyDisplayName(symbol)+"</span>";
+}
+
+function getCurrencySymbolHTML(symbol){
+  return "<span class='currencySymbol'>"+symbol+"</span>";
+}
+
+function toggleSelect(){
+  //var id = this.id;
+  //var btn = document.getElementById(id);
+  var btn = this;
+  var status = btn.getAttribute('selected');
+  if(status == "0"){
+    selectCurrencyBox(btn);
+  } else {
+    unSelectCurrencyBox(btn);
+  }
+}
+
+function findCurrencyButton(currency){
+  var table = document.getElementById("currenciesTable");
+  btn = table.querySelectorAll('button[currency="'+currency+'"]');
+  //btn = table.querySelectorAll('button');
+  return btn[0];
+}
+
+function selectCurrencyButton(currency){
+  var btn = findCurrencyButton(currency);
+  selectCurrencyBox(btn);
+}
+
+function selectCurrencyBox(btn){
+  if (btn != null && btn != undefined){
+    btn.className = "selectedCurrencyBox";
+    btn.setAttribute('selected',1);
+    selectCurrency(btn.id);
+  }
+}
+
+function unSelectCurrencyBox(btn){
+  if (btn != null && btn != undefined){
+    btn.className = "currencyBox";
+    btn.setAttribute('selected',0);
+    removeCurrency(btn.id);
+  }
+}
+
+function loadSelectedCurrencies(){
+  //Load values from local storage
+  json = localStorage.getItem("selectedCurrencies");
+  if (json == undefined){
+    return;
+  }
+  var currencies = JSON.parse(json);
+  if (currencies == undefined){
+    return;
+  }
+
+  //Populate rates table
+  for (c in currencies){
+    selectCurrencyButton(c);
+  }
+}
