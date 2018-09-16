@@ -9,9 +9,12 @@
 var selectedCurrencies = new persistentList("selectedCurrencies");
 var ratesTable = new exchangeRatesTable("ratesTable");
 var rates = new exchangeRates();
+var currencies = new currenciesList(currenciesJSON);
+var currenciesTable = new currenciesTable("currenciesTable");
 
 function main(){
   selectedCurrencies.load();
+  currenciesTable.init(3);
 
 
   populateCurrenciesTable(currenciesJSON,3);
@@ -24,6 +27,10 @@ function getKey(from,to){
 
 function update(){
   ratesTable.update(event);
+}
+
+function toggleSelect(){
+  currenciesTable.toggle(this);
 }
 
 //A class to store the selected currencies
@@ -237,6 +244,12 @@ class currenciesList{
     return name;
   }
 
+  function getAll(){
+    var keys = Object.keys(this.currencies);
+    keys.sort();
+    return keys;
+  }
+
 }
 
 class currenciesTable{
@@ -253,8 +266,7 @@ class currenciesTable{
     var rowIndex = 0;
     var cellIndex = 0;
     var row = table.insertRow(rowIndex++); //init table with first row
-    var keys  = Object.keys(jsonInput); //TODO: use the class
-    keys.sort();
+    var keys = currencies.getAll();
     for (var i in keys)
     {
       //Option element is to create a dropdown
@@ -264,69 +276,72 @@ class currenciesTable{
       //select_currency.appendChild(option);
       var currency = keys[i];
       var cSymbol = currency;
-      var cName = jsonInput[currency].currencyName;
-
+      var cName = currencies.getCurrencyName(currency);
 
       var cell = row.insertCell(cellIndex++);
-      var button = createCurrencyButton(cSymbol,cName);
-      cell.appendChild(button);
+      var button = new currencyButton(cSymbol);
+      cell.appendChild(button.instance());
 
       if(cellIndex == rowSize){
         row = table.insertRow(rowIndex++);
         cellIndex = 0;
       }
   }
-
 }
 
 
-function createCurrencyButton(symbol){
-  var btn = document.createElement('button');
-  btn.className = "currencyBox";
-  btn.id = symbol;
-  btn.value = symbol;
-  btn.setAttribute('selected',0);
-  btn.setAttribute('currency',symbol);
-  btn.onclick = toggleSelect;
-  btn.innerHTML = getCurrencySymbolHTML(symbol)+"<br>"+getCurrencyNameHTML(symbol);
-  return btn;
+class currencyButton{
+  constructor(symbol){
+    var btn = document.createElement('button');
+    btn.className = "currencyBox";
+    btn.id = symbol;
+    btn.value = symbol;
+    btn.setAttribute('selected',0);
+    btn.setAttribute('currency',symbol);
+    btn.onclick = toggleSelect;
+    btn.innerHTML = this.getCurrencySymbolHTML(symbol)+"<br>"+this.getCurrencyNameHTML(symbol);
+    this.btn = btn;
+  }
+
+  function instance(){
+    return this.btn;
+  }
+
+  function getCurrencyButtonHTML(symbol){
+    html = "<button class='currencyBox' id='"+symbol+"' value='"+symbol+"' selected=0 onclick='toggleSelect()'>"+this.getCurrencySymbolHTML(symbol)+"<br>"+this.getCurrencyNameHTML(symbol)+"<button>";
+    return html;
+  }
+
+  function getCurrencyNameHTML(symbol){
+    return "<span class='currencyName'>"+currencies.getCurrencyDisplayName(symbol)+"</span>";
+  }
+
+  function getCurrencySymbolHTML(symbol){
+    return "<span class='currencySymbol'>"+symbol+"</span>";
+  }
 }
 
-function getCurrencyButtonHTML(symbol){
-  html = "<button class='currencyBox' id='"+symbol+"' value='"+symbol+"' selected=0 onclick='toggleSelect()'>"+getCurrencySymbolHTML(symbol)+"<br>"+getCurrencyNameHTML(symbol)+"<button>";
-  return html;
-}
 
-function getCurrencyNameHTML(symbol){
-  return "<span class='currencyName'>"+getCurrencyDisplayName(symbol)+"</span>";
-}
 
-function getCurrencySymbolHTML(symbol){
-  return "<span class='currencySymbol'>"+symbol+"</span>";
-}
-
-function toggleSelect(){
-  //var id = this.id;
-  //var btn = document.getElementById(id);
-  var btn = this;
+function toggle(btn){
   var status = btn.getAttribute('selected');
   if(status == "0"){
-    selectCurrencyBox(btn);
+    this.selectCurrencyBox(btn);
   } else {
-    unSelectCurrencyBox(btn);
+    this.unSelectCurrencyBox(btn);
   }
 }
 
 function findCurrencyButton(currency){
-  var table = document.getElementById("currenciesTable");
+  var table = this.getElement();
   btn = table.querySelectorAll('button[currency="'+currency+'"]');
   //btn = table.querySelectorAll('button');
   return btn[0];
 }
 
 function selectCurrencyButton(currency){
-  var btn = findCurrencyButton(currency);
-  selectCurrencyBox(btn);
+  var btn = this.findCurrencyButton(currency);
+  this.selectCurrencyBox(btn);
 }
 
 function selectCurrencyBox(btn){
