@@ -1,67 +1,42 @@
 //popup.js
 //https://free.currencyconverterapi.com/api/v5/convert?q=EUR_USD&compact=y
 
+//============================================================================
+//============================================================================
 // TODO:
-//Refactor using classes
-//Combine in one file
 //Improve layout
 //Search currencies
-var selectedCurrencies = new persistentList("selectedCurrencies");
-var ratesTable = new exchangeRatesTable("ratesTable");
-var rates = new exchangeRates();
-var currencies = new currenciesList(currenciesJSON);
-var currenciesTable = new currenciesTable("currenciesTable");
 
-function main(){
-  selectedCurrencies.load();
-  currenciesTable.init(3);
-
-
-  populateCurrenciesTable(currenciesJSON,3);
-  selectDefaultTab();
-}
-
-function getKey(from,to){
-  return from+"_"+to;
-}
-
-function update(){
-  ratesTable.update(event);
-}
-
-function toggleSelect(){
-  currenciesTable.toggle(this);
-}
-
-//A class to store the selected currencies
+//============================================================================
+//===============A class to store the selected currencies=====================
 class persistentList {
   constructor(name) {
     this.entries = {};
     this.name = name;
   }
 
-  function add(entry){
+  add(entry){
     this.entries[entry] = entry;
     this.save();
   }
 
-  function remove(entry){
+  remove(entry){
     delete this.entries[entry];
     this.save();
   }
 
-  function get(){
+  get(){
     return this.entries;
   }
 
-  function save(){
-    json = JSON.stringify(this.entries);
+  save(){
+    var json = JSON.stringify(this.entries);
     localStorage.setItem(this.name, json);
   }
 
-  function load(){
+  load(){
     //Load values from local storage
-    json = localStorage.getItem(this.name);
+    var json = localStorage.getItem(this.name);
     if (json == undefined){
       return;
     }
@@ -74,12 +49,14 @@ class persistentList {
 
 }
 
+//============================================================================
+//=================A class to compute and store exchaange rates===============
 class exchangeRates {
   constructor() {
     this.mExchangeRates = {};
   }
 
-  function add(from,to,rate){
+  add(from,to,rate){
     if(rate == 0 || rate == undefined){
       return;
     }
@@ -94,12 +71,13 @@ class exchangeRates {
     }
   }
 
-  function get(from,to){
+  get(from,to){
     return this.mExchangeRates[getKey(from,to)];
   }
 }
 
-
+//============================================================================
+//==================Implement and manage the exchange rates table=============
 class exchangeRatesTable {
 
   constructor(id) {
@@ -108,15 +86,15 @@ class exchangeRatesTable {
     this.baseAmount = 0;
   }
 
-  function getElement(){
+  getElement(){
     return document.getElementById(this.id);
   }
 
-  function addCurrency(symbol){
+  addCurrency(symbol){
     var row = this.getElement().insertRow(0);
     var input = row.insertCell(0);
     var currency = row.insertCell(1);
-    var name = getCurrencyDisplayName(symbol);   //TODO: this is not part of the class
+    var name = currencies.getCurrencyDisplayName(symbol);   //TODO: this is not part of the class
     row.setAttribute("currency",symbol);
     currency.innerHTML = symbol+": "+name;
     input.innerHTML = '<input type="text" id="amount" value="" width="100%" onKeyUp="update()">';
@@ -125,12 +103,13 @@ class exchangeRatesTable {
     this.computeValue(symbol);
   }
 
-  function removeCurrency(symbol){
+  removeCurrency(symbol){
+    var rates = this.getElement();
     var row = this.getCurrencyRow(symbol);
     rates.deleteRow(row.rowIndex);
   }
 
-  function update(e){
+  update(e){
     //console.log(event.key);
     var input = e.currentTarget;
     var value = input.value;
@@ -143,26 +122,26 @@ class exchangeRatesTable {
     this.baseAmount = value;
 
     //On update, set the value in all the other boxes
-    for (c in selectedCurrencies){
+    for (c in selectedCurrencies.get()){
       this.computeValue(c);
     }
   }
 
-  function getCurrencyRow(symbol){
+  getCurrencyRow(symbol){
     var row = this.getElement().querySelector('[currency="'+symbol+'"]');
     return row;
   }
 
-  function setValue(symbol,value){
+  setValue(symbol,value){
     var row = this.getCurrencyRow(symbol);
     row.children[0].children[0].value = value.toFixed(2);
   }
 
-  function computeValue(selectedCurrency){
-    if (selectedCurrency.localeCompare(activeCurrency) != 0){
+  computeValue(selectedCurrency){
+    if (selectedCurrency.localeCompare(this.activeCurrency) != 0){
       console.log(selectedCurrency);
       //Get rates
-      var rate = rates.get(activeCurrency,selectedCurrency);
+      var rate = rates.get(this.activeCurrency,selectedCurrency);
       //Compute amount
       if (rate != undefined && this.baseAmount != undefined){
         var amount = this.baseAmount * rate;
@@ -175,67 +154,19 @@ class exchangeRatesTable {
 
 
 
-//============================================================================
-//============================================================================
-//============================================================================
-
-
-//Get exchange rate from api
-function getRate(from,to){
-  var url = getRateRequestURL(from,to);
-  var x = new XMLHttpRequest();
-  x.overrideMimeType('text/json');
-  console.log("getRate from: " + url);
-  x.open('GET', url);
-  x.onreadystatechange = function() {
-    if (x.readyState == 4 && x.status == 200) {
-      processResponse(x.responseText,from,to);
-      //alert(x.responseText);
-    }
-  };
-  x.send();
-}
-
-function processResponse(response,from,to){
-  //add code to handle response here
-  //parse response HTML and find the first search result
-  console.log("process xhr response");
-  console.log(response);
-  //{EUR_USD: {val: 1.161595}}
-  rate = extractRate(response,from,to);
-  console.log(rate);
-  addExRate(from,to,rate);
-}
-
-function extractRate(response,from,to){
-  var currencyPair = getCurrencyPair(from,to);
-  var myObj = JSON.parse(response);
-  var rate = myObj[currencyPair].val;
-  return rate;
-}
-
-function getRateRequestURL(from,to){
-  var currencyPair = getCurrencyPair(from,to);
-  var url = "https://free.currencyconverterapi.com/api/v5/convert?q="+currencyPair+"&compact=y";
-  return url;
-}
 
 //============================================================================
-
-class currency{
-
-}
-
+//============================================================================
 class currenciesList{
   constructor(list){
     this.currencies = list;
   }
 
-  function getCurrencyName(id){
+  getCurrencyName(id){
     return this.currencies[id].currencyName;
   }
 
-  function getCurrencyDisplayName(id){
+  getCurrencyDisplayName(id){
     var symbol = "(" + id + ")";
     if (this.currencies[id].currencySymbol != undefined){
       symbol = "(" + this.currencies[id].currencySymbol + ")";
@@ -244,7 +175,7 @@ class currenciesList{
     return name;
   }
 
-  function getAll(){
+  getAll(){
     var keys = Object.keys(this.currencies);
     keys.sort();
     return keys;
@@ -252,23 +183,30 @@ class currenciesList{
 
 }
 
+
+//============================================================================
+//============================================================================
 class currenciesTable{
   constructor(id){
     this.id = id;
   }
 
-  function getElement(){
+  getElement(){
     return document.getElementById(this.id);
   }
 
-  function init(rowSize){
+  init(rowSize){
+    this.generateTable(rowSize);
+    this.loadSelectedCurrencies();
+  }
+
+  generateTable(rowSize){
     var table = this.getElement();
     var rowIndex = 0;
     var cellIndex = 0;
     var row = table.insertRow(rowIndex++); //init table with first row
     var keys = currencies.getAll();
-    for (var i in keys)
-    {
+    for (var i in keys) {
       //Option element is to create a dropdown
       //var option = document.createElement('option');
       //option.value = currency;
@@ -279,108 +217,197 @@ class currenciesTable{
       var cName = currencies.getCurrencyName(currency);
 
       var cell = row.insertCell(cellIndex++);
-      var button = new currencyButton(cSymbol);
+      var button = new currencyButton("fromSymbol",cSymbol);
       cell.appendChild(button.instance());
 
       if(cellIndex == rowSize){
         row = table.insertRow(rowIndex++);
         cellIndex = 0;
       }
+    }
   }
+
+  loadSelectedCurrencies(){
+    selectedCurrencies.load();
+    var currencies = selectedCurrencies.get();
+    if (currencies == undefined){
+      return;
+    }
+
+    //Populate rates table
+    for (var c in currencies){
+      this.selectCurrencyButton(c);
+    }
+  }
+
+  findCurrencyButton(currency){
+    var table = this.getElement();
+    var e = table.querySelectorAll('button[currency="'+currency+'"]');
+    //btn = table.querySelectorAll('button');
+    var btn = e[0];
+    var instance = new currencyButton("fromButton", btn);
+    return instance;
+  }
+
+  selectCurrencyButton(currency){
+    var btn = this.findCurrencyButton(currency);
+    btn.select();
+  }
+
 }
 
 
 class currencyButton{
-  constructor(symbol){
-    var btn = document.createElement('button');
-    btn.className = "currencyBox";
-    btn.id = symbol;
-    btn.value = symbol;
-    btn.setAttribute('selected',0);
-    btn.setAttribute('currency',symbol);
-    btn.onclick = toggleSelect;
-    btn.innerHTML = this.getCurrencySymbolHTML(symbol)+"<br>"+this.getCurrencyNameHTML(symbol);
-    this.btn = btn;
+  constructor(type, param){
+    if (type == "fromSymbol"){
+      var btn = document.createElement('button');
+      btn.className = "currencyBox";
+      btn.id = param;
+      btn.value = param;
+      btn.setAttribute('selected',0);
+      btn.setAttribute('currency',param);
+      btn.onclick = toggleSelect;
+      btn.innerHTML = this.getCurrencySymbolHTML(param)+"<br>"+this.getCurrencyNameHTML(param);
+      this.btn = btn;
+    }
+    else {
+      this.btn = param;
+    }
   }
 
-  function instance(){
+  instance(){
     return this.btn;
   }
 
-  function getCurrencyButtonHTML(symbol){
+  getCurrencyButtonHTML(symbol){
     html = "<button class='currencyBox' id='"+symbol+"' value='"+symbol+"' selected=0 onclick='toggleSelect()'>"+this.getCurrencySymbolHTML(symbol)+"<br>"+this.getCurrencyNameHTML(symbol)+"<button>";
     return html;
   }
 
-  function getCurrencyNameHTML(symbol){
+  getCurrencyNameHTML(symbol){
     return "<span class='currencyName'>"+currencies.getCurrencyDisplayName(symbol)+"</span>";
   }
 
-  function getCurrencySymbolHTML(symbol){
+  getCurrencySymbolHTML(symbol){
     return "<span class='currencySymbol'>"+symbol+"</span>";
   }
-}
 
+  toggle(){
+    var status = this.btn.getAttribute('selected');
+    if(status == "0"){
+      this.select(this.btn);
+    } else {
+      this.unSelect(this.btn);
+    }
+  }
 
+  select(){
+    if (this.btn != null && this.btn != undefined){
+      this.btn.className = "selectedCurrencyBox";
+      this.btn.setAttribute('selected',1);
+      selectCurrency(this.btn.id);
+    }
+  }
 
-function toggle(btn){
-  var status = btn.getAttribute('selected');
-  if(status == "0"){
-    this.selectCurrencyBox(btn);
-  } else {
-    this.unSelectCurrencyBox(btn);
+  unSelect(){
+    if (this.btn != null && this.btn != undefined){
+      this.btn.className = "currencyBox";
+      this.btn.setAttribute('selected',0);
+      unselectCurrency(this.btn.id);
+    }
   }
 }
-
-function findCurrencyButton(currency){
-  var table = this.getElement();
-  btn = table.querySelectorAll('button[currency="'+currency+'"]');
-  //btn = table.querySelectorAll('button');
-  return btn[0];
-}
-
-function selectCurrencyButton(currency){
-  var btn = this.findCurrencyButton(currency);
-  this.selectCurrencyBox(btn);
-}
-
-function selectCurrencyBox(btn){
-  if (btn != null && btn != undefined){
-    btn.className = "selectedCurrencyBox";
-    btn.setAttribute('selected',1);
-    selectCurrency(btn.id);
-  }
-}
-
-function unSelectCurrencyBox(btn){
-  if (btn != null && btn != undefined){
-    btn.className = "currencyBox";
-    btn.setAttribute('selected',0);
-    removeCurrency(btn.id);
-  }
-}
-
-function addSelectedCurrency(currency){
-  for (var c in selectedCurrencies){
-    getRate(currency,c);
-  }
-  selectedCurrencies[currency] = currency;
-  saveSelectedCurrencies();
-}
-
 
 function selectCurrency(currency){
-  addCurrencyToRatesTable(currency);
-  addSelectedCurrency(currency);
+  ratesTable.addCurrency(currency);
+  selectedCurrencies.add(currency);
+  getRates(currency);
 }
 
-function removeCurrency(currency){
-  removeCurrencyFromRatesTable(currency);
-  removeFromSelected(currency);
+function unselectCurrency(currency){
+  ratesTable.removeCurrency(currency);
+  selectedCurrencies.remove(currency);
+}
+
+function getRates(currency){
+  for (var c in selectedCurrencies.get()){
+    xhrRatesHandler.getRate(currency,c);
+  }
+}
+
+//============================================================================
+//============================================================================
+
+class xhrHandler{
+  constructor(){
+  }
+
+  send(op, url, processor, params){
+    var x = new XMLHttpRequest();
+    x.overrideMimeType('text/json');
+    x.open(op, url);
+    x.onreadystatechange = function() {
+      if (x.readyState == 4 && x.status == 200) {
+        //processResponse(x.responseText,from,to);
+        console.log(x.responseText);
+        processor(x.responseText, params)
+      }
+    };
+    x.send();
+  }
+
+  GET(url, processor, params){
+    this.send('GET', url, processor, params);
+  }
+
+}
+
+class ratesHandler{
+  constructor(){
+  }
+
+  getRate(from,to){
+    var url = this.getRateRequestURL(from,to);
+    var params = {};
+    params["from"] = from;
+    params["to"] = to;
+    var xhr = new xhrHandler();
+    xhr.GET(url,this.processResponse,params);
+  }
+
+  getRateRequestURL(from,to){
+    var currencyPair = getKey(from,to);
+    var url = "https://free.currencyconverterapi.com/api/v5/convert?q="+currencyPair+"&compact=y";
+    return url;
+  }
+
+  processResponse(response, params){
+    console.log("process xhr response");
+    var from = params["from"];
+    var to = params["to"];
+    var rate = this.extractRate(response,from,to);
+    var currencyPair = getKey(from,to);
+    var myObj = JSON.parse(response);
+    //var rate = myObj[currencyPair].val;
+
+    console.log(rate);
+    rates.add(from,to,rate);
+  }
+
+  extractRate(response,from,to){
+    var currencyPair = getKey(from,to);
+    var myObj = JSON.parse(response);
+    var rate = myObj[currencyPair].val;
+    return rate;
+  }
+
+
 }
 
 
-//----------------------------- Tabs =============================
+
+//============================================================================
+//=============================Tabs===========================================
 
 function showTab(evt, tabName) {
     // Declare all variables
@@ -407,19 +434,33 @@ function selectDefaultTab(){
   document.getElementById("defaultTab").click();
 }
 
-//-----------------------------Refactor into classes=============================
+//============================================================================
+//========================Global Variables and Methods========================
 
+var selectedCurrencies = new persistentList("selectedCurrencies");
+var ratesTable = new exchangeRatesTable("ratesTable");
+var rates = new exchangeRates();
+var currencies = new currenciesList(currenciesJSON);
+var theCurrenciesTable = new currenciesTable("currenciesTable");
+var xhrRatesHandler = new ratesHandler();
 
-
-function loadSelectedCurrencies(){
-  selectedCurrencies.load();
-  var currencies = selectedCurrencies.get();
-  if (currencies == undefined){
-    return;
-  }
-
-  //Populate rates table
-  for (c in currencies){
-    selectCurrencyButton(c);
-  }
+function main(){
+  theCurrenciesTable.init(3);
+  selectDefaultTab();
 }
+
+function getKey(from,to){
+  return from+"_"+to;
+}
+
+function update(){
+  ratesTable.update(event);
+}
+
+function toggleSelect(){
+  //theCurrenciesTable.toggle(this);
+  b = new currencyButton("fromButton", this);
+  b.toggle();
+}
+
+main();
