@@ -340,7 +340,6 @@ function unselectCurrency(currency){
 
 function getRates(currency){
   for (var c in selectedCurrencies.get()){
-    //xhrRatesHandler.getRate(currency,c);
     getRate(currency,c);
   }
 }
@@ -348,72 +347,44 @@ function getRates(currency){
 //============================================================================
 //============================================================================
 
-class xhrHandler{
-  constructor(){
-  }
-
-  send(op, url, processor, params){
-    var x = new XMLHttpRequest();
-    x.overrideMimeType('text/json');
-    x.open(op, url);
-    x.onreadystatechange = function() {
-      if (x.readyState == 4 && x.status == 200) {
-        //processResponse(x.responseText,from,to);
-        console.log(x.responseText);
-        processor(x.responseText, params)
-      }
-    };
-    x.send();
-  }
-
-  GET(url, processor, params){
-    this.send('GET', url, processor, params);
-  }
-
+//Get exchange rate from api
+function getRate(from,to){
+  var url = getRateRequestURL(from,to);
+  var x = new XMLHttpRequest();
+  x.overrideMimeType('text/json');
+  console.log("getRate from: " + url);
+  x.open('GET', url);
+  x.onreadystatechange = function() {
+    if (x.readyState == 4 && x.status == 200) {
+      processResponse(x.responseText,from,to);
+      //alert(x.responseText);
+    }
+  };
+  x.send();
 }
 
-class ratesHandler{
-  constructor(){
-  }
-
-  getRate(from,to){
-    var url = this.getRateRequestURL(from,to);
-    var params = {};
-    params["from"] = from;
-    params["to"] = to;
-    var xhr = new xhrHandler();
-    xhr.GET(url,this.processResponse,params);
-  }
-
-  getRateRequestURL(from,to){
-    var currencyPair = getKey(from,to);
-    var url = "https://free.currencyconverterapi.com/api/v5/convert?q="+currencyPair+"&compact=y";
-    return url;
-  }
-
-  processResponse(response, params){
-    console.log("process xhr response");
-    var from = params["from"];
-    var to = params["to"];
-    var rate = this.extractRate(response,from,to);
-    var currencyPair = getKey(from,to);
-    var myObj = JSON.parse(response);
-    //var rate = myObj[currencyPair].val;
-
-    console.log(rate);
-    rates.add(from,to,rate);
-  }
-
-  extractRate(response,from,to){
-    var currencyPair = getKey(from,to);
-    var myObj = JSON.parse(response);
-    var rate = myObj[currencyPair].val;
-    return rate;
-  }
-
-
+function getRateRequestURL(from,to){
+  var currencyPair = getKey(from,to);
+  var url = "https://free.currencyconverterapi.com/api/v5/convert?q="+currencyPair+"&compact=y";
+  return url;
 }
 
+function processResponse(response,from,to){
+  //add code to handle response here
+  //parse response HTML and find the first search result
+  console.log("process xhr response");
+  console.log(response);
+  rate = extractRate(response,from,to);
+  console.log(rate);
+  rates.add(from,to,rate);
+}
+
+function extractRate(response,from,to){
+  var currencyPair = getKey(from,to);
+  var myObj = JSON.parse(response);
+  var rate = myObj[currencyPair].val;
+  return rate;
+}
 
 
 //============================================================================
@@ -452,7 +423,6 @@ var ratesTable = new exchangeRatesTable("ratesTable");
 var rates = new exchangeRates();
 var currencies = new currenciesList(currenciesJSON);
 var theCurrenciesTable = new currenciesTable("currenciesTable");
-var xhrRatesHandler = new ratesHandler();
 
 function main(){
   theCurrenciesTable.init(3);
@@ -478,48 +448,3 @@ main();
 //============================================================================
 //============================================================================
 //============================================================================
-
-//Get exchange rate from api
-function getRate(from,to){
-  var url = getRateRequestURL(from,to);
-  var x = new XMLHttpRequest();
-  x.overrideMimeType('text/json');
-  console.log("getRate from: " + url);
-  x.open('GET', url);
-  x.onreadystatechange = function() {
-    if (x.readyState == 4 && x.status == 200) {
-      processResponse(x.responseText,from,to);
-      //alert(x.responseText);
-    }
-  };
-  x.send();
-}
-
-function getRateRequestURL(from,to){
-  var currencyPair = getCurrencyPair(from,to);
-  var url = "https://free.currencyconverterapi.com/api/v5/convert?q="+currencyPair+"&compact=y";
-  return url;
-}
-
-function getCurrencyPair(from,to){
-  return from+"_"+to;
-}
-
-function processResponse(response,from,to){
-  //add code to handle response here
-  //parse response HTML and find the first search result
-  console.log("process xhr response");
-  console.log(response);
-  //{EUR_USD: {val: 1.161595}}
-  rate = extractRate(response,from,to);
-  console.log(rate);
-  //addExRate(from,to,rate);
-  rates.add(from,to,rate);
-}
-
-function extractRate(response,from,to){
-  var currencyPair = getCurrencyPair(from,to);
-  var myObj = JSON.parse(response);
-  var rate = myObj[currencyPair].val;
-  return rate;
-}
