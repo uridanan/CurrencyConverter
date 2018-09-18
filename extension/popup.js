@@ -60,15 +60,13 @@ class exchangeRates {
     if(rate == 0 || rate == undefined){
       return;
     }
-    fromto = getKey(from,to);
-    tofrom = getKey(to,from);
+    var fromto = getKey(from,to);
+    var tofrom = getKey(to,from);
     this.mExchangeRates[fromto] = rate;
     this.mExchangeRates[tofrom] = 1/rate;
 
     //Add exchange rates for all currency pairs but compute the value only for the active currency
-    if(to.localeCompare(activeCurrency) == 0){
-      ratesTable.computeValue(from); //setExRateValue(from);
-    }
+    ratesTable.computeValueForActiveCurrency(to,from);
   }
 
   get(from,to){
@@ -84,6 +82,10 @@ class exchangeRatesTable {
     this.id = id;
     this.activeCurrency = undefined;
     this.baseAmount = 0;
+  }
+
+  isActiveCurrency(currency){
+    return (currency.localeCompare(this.activeCurrency) == 0);
   }
 
   getElement(){
@@ -122,7 +124,7 @@ class exchangeRatesTable {
     this.baseAmount = value;
 
     //On update, set the value in all the other boxes
-    for (c in selectedCurrencies.get()){
+    for (var c in selectedCurrencies.get()){
       this.computeValue(c);
     }
   }
@@ -137,16 +139,23 @@ class exchangeRatesTable {
     row.children[0].children[0].value = value.toFixed(2);
   }
 
-  computeValue(selectedCurrency){
-    if (selectedCurrency.localeCompare(this.activeCurrency) != 0){
-      console.log(selectedCurrency);
+  computeValueForActiveCurrency(baseCurrency, targetCurrency){
+    //Add exchange rates for all currency pairs but compute the value only for the active currency
+    if(this.isActiveCurrency(baseCurrency)){
+      this.computeValue(targetCurrency); //setExRateValue(from);
+    }
+  }
+
+  computeValue(targetCurrency){
+    if (targetCurrency.localeCompare(this.activeCurrency) != 0){
+      console.log(targetCurrency);
       //Get rates
-      var rate = rates.get(this.activeCurrency,selectedCurrency);
+      var rate = rates.get(this.activeCurrency,targetCurrency);
       //Compute amount
       if (rate != undefined && this.baseAmount != undefined){
         var amount = this.baseAmount * rate;
         //Set value
-        this.setValue(selectCurrency,amount);
+        this.setValue(targetCurrency,amount);
       }
     }
   }
@@ -331,7 +340,8 @@ function unselectCurrency(currency){
 
 function getRates(currency){
   for (var c in selectedCurrencies.get()){
-    xhrRatesHandler.getRate(currency,c);
+    //xhrRatesHandler.getRate(currency,c);
+    getRate(currency,c);
   }
 }
 
@@ -464,3 +474,52 @@ function toggleSelect(){
 }
 
 main();
+
+//============================================================================
+//============================================================================
+//============================================================================
+
+//Get exchange rate from api
+function getRate(from,to){
+  var url = getRateRequestURL(from,to);
+  var x = new XMLHttpRequest();
+  x.overrideMimeType('text/json');
+  console.log("getRate from: " + url);
+  x.open('GET', url);
+  x.onreadystatechange = function() {
+    if (x.readyState == 4 && x.status == 200) {
+      processResponse(x.responseText,from,to);
+      //alert(x.responseText);
+    }
+  };
+  x.send();
+}
+
+function getRateRequestURL(from,to){
+  var currencyPair = getCurrencyPair(from,to);
+  var url = "https://free.currencyconverterapi.com/api/v5/convert?q="+currencyPair+"&compact=y";
+  return url;
+}
+
+function getCurrencyPair(from,to){
+  return from+"_"+to;
+}
+
+function processResponse(response,from,to){
+  //add code to handle response here
+  //parse response HTML and find the first search result
+  console.log("process xhr response");
+  console.log(response);
+  //{EUR_USD: {val: 1.161595}}
+  rate = extractRate(response,from,to);
+  console.log(rate);
+  //addExRate(from,to,rate);
+  rates.add(from,to,rate);
+}
+
+function extractRate(response,from,to){
+  var currencyPair = getCurrencyPair(from,to);
+  var myObj = JSON.parse(response);
+  var rate = myObj[currencyPair].val;
+  return rate;
+}
