@@ -6,6 +6,7 @@
 // TODO:
 //Improve layout
 //Search currencies
+//Make extension popup
 
 //============================================================================
 //===============A class to store the selected currencies=====================
