@@ -6,13 +6,15 @@ body {
   height: 600px;
 }
 
+/*
 #contents div {
-    display: none; /*hides all div elements*/
+    display: none;
 }
 
 #contents div:target {
-    display: block; /*shows the selected div (target)*/
+    display: block;
 }
+*/
 
 table {
   padding: 3px;
@@ -43,7 +45,7 @@ input:focus {
 }
 
 /* Style the buttons that are used to open the tab content */
-.tab a {
+.tab button {
     background-color: inherit;
     float: left;
     border: none;
@@ -54,12 +56,12 @@ input:focus {
 }
 
 /* Change background color of buttons on hover */
-.tab a:hover {
+.tab button:hover {
     background-color: #ddd;
 }
 
 /* Create an active/current tablink class */
-.tab a.active {
+.tab button.active {
     background-color: #ccc;
 }
 

@@ -10,7 +10,6 @@
 //Improve tab style
 //display active tab
 //Select default tab
-//Display content of exchange tab: why is table empty?
 //Make sure tab bar is always on top
 
 //============================================================================
@@ -366,7 +365,7 @@ function getRate(from,to){
       //alert(x.responseText);
     }
   };
-  x.send();
+  // x.send();
 }
 
 function getRateRequestURL(from,to){
@@ -411,12 +410,13 @@ function createTab(name, isDefault){
   if(isDefault == true){
     btn.id = "defaultTab";
   }
+  btn.value = name;
   btn.innerHTML = name;
   btn.onclick = "showTab(event, 'Currencies')";
   tabs.appendChild(btn);
 }
 
-function showTab(evt, tabName) {
+function showTab(evt) {
     // Declare all variables
     var i, tabcontent, tablinks;
 
@@ -433,7 +433,8 @@ function showTab(evt, tabName) {
     }
 
     // Show the current tab, and add an "active" class to the button that opened the tab
-    document.getElementById(tabName).style.display = "block";
+    //document.getElementById(tabName).style.display = "block";
+    document.getElementById(evt.currentTarget.value).style.display = "block";
     evt.currentTarget.className += " active";
 }
 
@@ -451,8 +452,9 @@ var currencies = new currenciesList(currenciesJSON);
 var theCurrenciesTable = new currenciesTable("currenciesTable");
 
 function main(){
-  //addTabs();
+  addTabs();
   theCurrenciesTable.init(3);
+  addEventListeners();
 }
 
 function getKey(from,to){
@@ -474,3 +476,20 @@ main();
 //============================================================================
 //============================================================================
 //============================================================================
+
+//Chrome discourages using inline javascript.
+//Instead implement event listeners to add the functionality
+function addEventListeners(){
+  addTabClickListener();
+}
+
+function addTabClickListener(){
+  //Catch clicks on tabs
+  var tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].addEventListener(
+        'click',
+        function() {showTab(event);}
+      );
+  }
+}
