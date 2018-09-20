@@ -11,6 +11,8 @@
 //display active tab
 //Select default tab
 //Make sure tab bar is always on top
+//Finish adding listeners
+//Reduce number of calls on REST API to prevent being blocked
 
 //============================================================================
 //===============A class to store the selected currencies=====================
@@ -104,7 +106,8 @@ class exchangeRatesTable {
     var name = currencies.getCurrencyDisplayName(symbol);   //TODO: this is not part of the class
     row.setAttribute("currency",symbol);
     currency.innerHTML = symbol+": "+name;
-    input.innerHTML = '<input type="text" id="amount" value="" width="100%" onKeyUp="update()">';
+    input.innerHTML = '<input type="text" class="amount" value="" width="100%">';
+    //input.innerHTML = '<input type="text" class="amount" value="" width="100%" onKeyUp="update()">';
 
     //Init value, just in case this happens after the getRate request returns
     this.computeValue(symbol);
@@ -481,6 +484,7 @@ main();
 //Instead implement event listeners to add the functionality
 function addEventListeners(){
   addTabClickListener();
+  addAmountInputListener();
 }
 
 function addTabClickListener(){
@@ -490,6 +494,18 @@ function addTabClickListener(){
       tablinks[i].addEventListener(
         'click',
         function() {showTab(event);}
+      );
+  }
+}
+
+function addAmountInputListener(){
+  //input.innerHTML = '<input type="text" class="amount" value="" width="100%" onKeyUp="update()">';
+  var amounts = document.getElementsByClassName("amount");
+  console.log("Add listeners for amounts " + amounts.length);
+  for (i = 0; i < amounts.length; i++) {
+      amounts[i].addEventListener(
+        'keyup',
+        function() {update(event);}
       );
   }
 }
