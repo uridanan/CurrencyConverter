@@ -7,26 +7,27 @@
   <body>
 
     <!-- Tab links -->
-    <div class="tab">
+    <div id="tabs" class="tab">
       <!-- <img src="marquee.png" height="100px" width="300px"> -->
-      <button class="tablinks" onclick="showTab(event, 'Exchange')" id="defaultTab">Exchange</button>
-      <button class="tablinks" onclick="showTab(event, 'Currencies')">Currencies</button>
+      <a class="tablinks" href="#Exchange" id="defaultTab">Exchange</a>
+      <a class="tablinks" href="#Currencies">Currencies</a>
     </div>
 
     <!-- Tab content -->
-    <div id="Exchange" class="tabcontent">
-      <table id="ratesTable">
-      </table>
-    </div>
+    <div id=contents>
+      <div id="Exchange" class="tabcontent">
+        <table id="ratesTable">
+        </table>
+      </div>
 
-    <div id="Currencies" class="tabcontent">
-      <table id="currenciesTable">
-      </table>
+      <div id="Currencies" class="tabcontent">
+        <table id="currenciesTable">
+        </table>
+      </div>
     </div>
-
 
   <script src="currencies.js" charset="UTF-8"></script>
-  <script src="popup.js" charset="UTF-8"></script>
+  <script nonce="$RANDOM" src="popup.js" charset="UTF-8"></script>
 
   </body>
 </html>

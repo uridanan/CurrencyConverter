@@ -1,0 +1,21 @@
+{
+  "manifest_version": 2,
+  "name": "Links4Next",
+  "version": "0.4",
+  "permissions": [
+          "tabs"
+        ],
+  "page_action": {
+	   "default_icon": "logo3.png",
+     "default_popup": "popup.html"
+  },
+  "content_scripts": [
+	  {
+		"matches": ["http://*.nextdirect.com/*/ViewData/ViewCart-View", "https://*.nextdirect.com/*/ViewData/ViewCart-View", "http://il.nextdirect.com/en/ViewData/ViewCart-View"],
+		"js": ["jquery-3.1.1.min.js", "common.js", "content.js"]
+	  }
+	],
+  "background": {
+	"scripts": ["jquery-3.1.1.min.js", "common.js", "getItemPage.js", "createShoppingBagTable.js", "background.js"]
+	}
+}

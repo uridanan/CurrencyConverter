@@ -6,12 +6,7 @@
 // TODO:
 //Improve layout
 //Search currencies
-
-//Improve tab style
-//display active tab
-//Select default tab
-//Display content of exchange tab: why is table empty?
-//Make sure tab bar is always on top
+//Make extension popup
 
 //============================================================================
 //===============A class to store the selected currencies=====================
@@ -396,26 +391,6 @@ function extractRate(response,from,to){
 //============================================================================
 //=============================Tabs===========================================
 
-function addTabs(){
-  createTab("Exchange",true);
-  createTab("Currencies",false);
-  selectDefaultTab();
-  //<button class="tablinks" onclick="showTab(event, 'Exchange')" id="defaultTab">Exchange</button>
-  //<button class="tablinks" onclick="showTab(event, 'Currencies')">Currencies</button>
-}
-
-function createTab(name, isDefault){
-  var tabs = document.getElementById("tabs");
-  var btn = document.createElement('button');
-  btn.className = "tablinks";
-  if(isDefault == true){
-    btn.id = "defaultTab";
-  }
-  btn.innerHTML = name;
-  btn.onclick = "showTab(event, 'Currencies')";
-  tabs.appendChild(btn);
-}
-
 function showTab(evt, tabName) {
     // Declare all variables
     var i, tabcontent, tablinks;
@@ -451,8 +426,8 @@ var currencies = new currenciesList(currenciesJSON);
 var theCurrenciesTable = new currenciesTable("currenciesTable");
 
 function main(){
-  //addTabs();
   theCurrenciesTable.init(3);
+  selectDefaultTab();
 }
 
 function getKey(from,to){
