@@ -11,6 +11,7 @@
 //Finish adding listeners
 //Rates are now a persistent list, add expiration to the entries
 //Fix event listener for currencies selected in session
+//Error 403 probably becasue too many calls, the getRates refactor might actually work
 
 //============================================================================
 //===============A class to store the selected currencies=====================
@@ -130,7 +131,7 @@ class exchangeRatesTable {
     input.innerHTML = '<input type="text" class="amount" value="" width="100%">';
     //input.innerHTML = '<input type="text" class="amount" value="" width="100%" onKeyUp="update()">';
     //Listen to onKeyUp events
-    addAmountInputListenerToElement(input);
+    addAmountInputListenerToElement(input.children[0]);
     //Init value, just in case this happens after the getRate request returns
     this.computeValue(symbol);
   }
@@ -530,10 +531,8 @@ function addAmountInputListeners(){
   var amounts = document.getElementsByClassName("amount");
   console.log("Add listeners for amounts " + amounts.length);
   for (i = 0; i < amounts.length; i++) {
-      amounts[i].addEventListener(
-        'keyup',
-        function() {update(event);}
-      );
+      addAmountInputListenerToElement(amounts[i]);
+      //amounts[i].addEventListener('keyup',function() {update(event);});
   }
 }
 
@@ -543,8 +542,5 @@ function addAmountInputListenerById(id){
 }
 
 function addAmountInputListenerToElement(e){
-  e.addEventListener(
-    'keyup',
-    function() {update(event);}
-  );
+  e.addEventListener('keyup',function() {update(event);});
 }
