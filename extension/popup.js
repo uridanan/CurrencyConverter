@@ -6,13 +6,11 @@
 // TODO:
 //Improve layout
 //Search currencies
-
-//Improve tab style
-//display active tab
 //Select default tab
 //Make sure tab bar is always on top
 //Finish adding listeners
-//Reduce number of calls on REST API to prevent being blocked
+//Rates are now a persistent list, add expiration to the entries
+//Fix event listener for currencies selected in session
 
 //============================================================================
 //===============A class to store the selected currencies=====================
@@ -22,17 +20,21 @@ class persistentList {
     this.name = name;
   }
 
-  add(entry){
-    this.entries[entry] = entry;
+  add(key,value){
+    this.entries[key] = value;
     this.save();
   }
 
-  remove(entry){
-    delete this.entries[entry];
+  get(key){
+    return this.entries[key];
+  }
+
+  remove(key){
+    delete this.entries[key];
     this.save();
   }
 
-  get(){
+  getAll(){
     return this.entries;
   }
 
@@ -60,24 +62,43 @@ class persistentList {
 //=================A class to compute and store exchaange rates===============
 class exchangeRates {
   constructor() {
-    this.mExchangeRates = {};
+    this.mExchangeRates = new persistentList("exchangeRates");
   }
 
-  add(from,to,rate){
+  set(from,to,rate){
     if(rate == 0 || rate == undefined){
       return;
     }
     var fromto = getKey(from,to);
     var tofrom = getKey(to,from);
-    this.mExchangeRates[fromto] = rate;
-    this.mExchangeRates[tofrom] = 1/rate;
-
-    //Add exchange rates for all currency pairs but compute the value only for the active currency
-    ratesTable.computeValueForActiveCurrency(to,from);
+    this.mExchangeRates.add(fromto,rate);
+    this.mExchangeRates.add(tofrom,1/rate);
   }
 
   get(from,to){
-    return this.mExchangeRates[getKey(from,to)];
+    var fromto = getKey(from,to);
+    return this.mExchangeRates.get(fromto);
+  }
+
+  add(from,to){
+    //console.log("Add rate from "+from+" to "+to);
+    //Special case: identity pair, rate is 1
+    if(from.localeCompare(to) == 0){
+      this.set(from,to,1);
+    }
+
+    //If the entry does not already exist, call REST api
+    var rate = this.get(from,to);
+    if(rate == undefined){
+      //Entry will be added by the callback
+      //console.log("Send XHR request for rate from "+from+" to "+to);
+      getRate(from,to);
+    }
+    else{
+      //If the rate is already available compute the value
+      console.log("Rate from "+from+" to "+to+" already available: "+rate);
+      ratesTable.computeValue(from);
+    }
   }
 }
 
@@ -108,7 +129,8 @@ class exchangeRatesTable {
     currency.innerHTML = symbol+": "+name;
     input.innerHTML = '<input type="text" class="amount" value="" width="100%">';
     //input.innerHTML = '<input type="text" class="amount" value="" width="100%" onKeyUp="update()">';
-
+    //Listen to onKeyUp events
+    addAmountInputListenerToElement(input);
     //Init value, just in case this happens after the getRate request returns
     this.computeValue(symbol);
   }
@@ -132,7 +154,7 @@ class exchangeRatesTable {
     this.baseAmount = value;
 
     //On update, set the value in all the other boxes
-    for (var c in selectedCurrencies.get()){
+    for (var c in selectedCurrencies.getAll()){
       this.computeValue(c);
     }
   }
@@ -148,12 +170,14 @@ class exchangeRatesTable {
   }
 
   computeValueForActiveCurrency(baseCurrency, targetCurrency){
-    //Add exchange rates for all currency pairs but compute the value only for the active currency
-    if(this.isActiveCurrency(baseCurrency)){
-      this.computeValue(targetCurrency); //setExRateValue(from);
+      //ProcessResponse will return for all pairs
+      //We only want to compute the value only for the active currency
+      if(this.isActiveCurrency(baseCurrency)){
+        this.computeValue(targetCurrency);
+      }
     }
-  }
 
+  //Compute value from currently active base currency to newly added currency
   computeValue(targetCurrency){
     if (targetCurrency.localeCompare(this.activeCurrency) != 0){
       console.log(targetCurrency);
@@ -246,7 +270,7 @@ class currenciesTable{
 
   loadSelectedCurrencies(){
     selectedCurrencies.load();
-    var currencies = selectedCurrencies.get();
+    var currencies = selectedCurrencies.getAll();
     if (currencies == undefined){
       return;
     }
@@ -337,8 +361,9 @@ class currencyButton{
 
 function selectCurrency(currency){
   ratesTable.addCurrency(currency);
-  selectedCurrencies.add(currency);
+  selectedCurrencies.add(currency,currency);
   getRates(currency);
+  //Can't compute the value here because the rate might not be available yet
 }
 
 function unselectCurrency(currency){
@@ -347,8 +372,9 @@ function unselectCurrency(currency){
 }
 
 function getRates(currency){
-  for (var c in selectedCurrencies.get()){
-    getRate(currency,c);
+  for (var c in selectedCurrencies.getAll()){
+    rates.add(currency,c);
+    //getRate(currency,c);
   }
 }
 
@@ -368,7 +394,7 @@ function getRate(from,to){
       //alert(x.responseText);
     }
   };
-  // x.send();
+  x.send();
 }
 
 function getRateRequestURL(from,to){
@@ -384,7 +410,8 @@ function processResponse(response,from,to){
   console.log(response);
   rate = extractRate(response,from,to);
   console.log(rate);
-  rates.add(from,to,rate);
+  rates.set(from,to,rate);
+  ratesTable.computeValueForActiveCurrency(to,from);
 }
 
 function extractRate(response,from,to){
@@ -415,7 +442,7 @@ function createTab(name, isDefault){
   }
   btn.value = name;
   btn.innerHTML = name;
-  btn.onclick = "showTab(event, 'Currencies')";
+  //btn.onclick = "showTab(event, 'Currencies')";
   tabs.appendChild(btn);
 }
 
@@ -483,11 +510,11 @@ main();
 //Chrome discourages using inline javascript.
 //Instead implement event listeners to add the functionality
 function addEventListeners(){
-  addTabClickListener();
-  addAmountInputListener();
+  addTabClickListeners();
+  addAmountInputListeners();
 }
 
-function addTabClickListener(){
+function addTabClickListeners(){
   //Catch clicks on tabs
   var tablinks = document.getElementsByClassName("tablinks");
   for (i = 0; i < tablinks.length; i++) {
@@ -498,7 +525,7 @@ function addTabClickListener(){
   }
 }
 
-function addAmountInputListener(){
+function addAmountInputListeners(){
   //input.innerHTML = '<input type="text" class="amount" value="" width="100%" onKeyUp="update()">';
   var amounts = document.getElementsByClassName("amount");
   console.log("Add listeners for amounts " + amounts.length);
@@ -508,4 +535,16 @@ function addAmountInputListener(){
         function() {update(event);}
       );
   }
+}
+
+function addAmountInputListenerById(id){
+  var amount = document.getElementsById(id);
+  addAmountInputListenerToElement(amount);
+}
+
+function addAmountInputListenerToElement(e){
+  e.addEventListener(
+    'keyup',
+    function() {update(event);}
+  );
 }
