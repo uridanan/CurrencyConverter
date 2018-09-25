@@ -8,7 +8,6 @@
 //Search currencies
 //Make sure tab bar is always on top
 //Error 403 probably becasue too many calls, the getRates refactor might actually work
-//Select default tab
 
 
 //Add expiration to local storage
@@ -482,6 +481,7 @@ function createTab(name, isDefault){
   btn.className = "tablinks";
   if(isDefault == true){
     btn.id = "defaultTab";
+    btn.clientidmode = "Static";
   }
   btn.value = name;
   btn.innerHTML = name;
@@ -489,7 +489,7 @@ function createTab(name, isDefault){
   tabs.appendChild(btn);
 }
 
-function showTab(evt) {
+function showTab(tab) {
     // Declare all variables
     var i, tabcontent, tablinks;
 
@@ -507,12 +507,15 @@ function showTab(evt) {
 
     // Show the current tab, and add an "active" class to the button that opened the tab
     //document.getElementById(tabName).style.display = "block";
-    document.getElementById(evt.currentTarget.value).style.display = "block";
-    evt.currentTarget.className += " active";
+    //document.getElementById(evt.currentTarget.value).style.display = "block";
+    //evt.currentTarget.className += " active";
+    document.getElementById(tab.value).style.display = "block";
+    tab.className += " active";
 }
 
 function selectDefaultTab(){
-  document.getElementById("defaultTab").click();
+  var defaultTab = document.getElementById("defaultTab");
+  showTab(defaultTab);
 }
 
 //============================================================================
@@ -563,7 +566,7 @@ function addTabClickListeners(){
   for (i = 0; i < tablinks.length; i++) {
       tablinks[i].addEventListener(
         'click',
-        function() {showTab(event);}
+        function() {showTab(event.currentTarget);}
       );
   }
 }
