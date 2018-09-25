@@ -9,7 +9,7 @@
 //Make sure tab bar is always on top
 //Error 403 probably becasue too many calls, the getRates refactor might actually work
 //Select default tab
-//Rates are now a persistent list, add expiration to the entries
+
 
 //Add expiration to local storage
 //From: https://gist.github.com/anhang/1096149
@@ -35,10 +35,10 @@ class persistentDict {
 
   get(key){
     var entry = this.entries[key];
-    var value = entry.value;
-    //if(entry != undefined && !this.isExpired(entry["timeout"])){
-    //  value = entry["value"];
-    //}
+    var value = undefined;
+    if(entry != undefined){// && !this.isExpired(entry["timeout"])){
+      value = entry["value"];
+    }
     return value;
   }
 
@@ -55,7 +55,8 @@ class persistentDict {
   getAll(){
     var entries = this.entries;
     var values = {};
-    for(var e in entries){
+    for(var k in entries){
+      var e = entries[k];
       values[e.value] = e.value;
     }
     return values;
@@ -412,8 +413,11 @@ function unselectCurrency(currency){
 
 function getRates(currency){
   for (var c in selectedCurrencies.getAll()){
-    rates.add(currency,c);
-    //getRate(currency,c);
+    console.log("Add currency pair: "+currency+"_"+c);
+    if(currency != undefined && c != undefined){
+      rates.add(currency,c);
+      //getRate(currency,c);
+    }
   }
 }
 
@@ -514,7 +518,7 @@ function selectDefaultTab(){
 //============================================================================
 //========================Global Variables and Methods========================
 
-var selectedCurrencies = new persistentDict("selectedCurrencies",1);
+var selectedCurrencies = new persistentDict("selectedCurrencies",0);
 var ratesTable = new exchangeRatesTable("ratesTable");
 var rates = new exchangeRates();
 var currencies = new currenciesList(currenciesJSON);
