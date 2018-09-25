@@ -6,28 +6,46 @@
 // TODO:
 //Improve layout
 //Search currencies
-//Select default tab
 //Make sure tab bar is always on top
-//Finish adding listeners
-//Rates are now a persistent list, add expiration to the entries
-//Fix event listener for currencies selected in session
 //Error 403 probably becasue too many calls, the getRates refactor might actually work
+//Select default tab
+//Rates are now a persistent list, add expiration to the entries
+
+//Add expiration to local storage
+//From: https://gist.github.com/anhang/1096149
 
 //============================================================================
 //===============A class to store the selected currencies=====================
-class persistentList {
-  constructor(name) {
+class persistentDict {
+  //timeout = 0 means the entries never expire
+  constructor(name,timeoutMin) {
     this.entries = {};
     this.name = name;
+    this.timeout = timeoutMin * 60 * 1000; // save timeout in msec
   }
 
   add(key,value){
-    this.entries[key] = value;
+    var entry = {};
+    var timeout = new Date().getTime() + this.timeout;
+    entry["value"] = value;
+    entry["timeout"] = timeout;
+    this.entries[key] = entry;
     this.save();
   }
 
   get(key){
-    return this.entries[key];
+    var entry = this.entries[key];
+    var now =  new Date().getTime();
+    var value = undefined;
+    if(entry != undefined && !this.isExpired(entry["timeout"])){
+      value = entry["value"];
+    }
+    return value;
+  }
+
+  isExpired(timeout){
+    var now =  new Date().getTime();
+    return (timeout > 0 && now > timeout);
   }
 
   remove(key){
@@ -63,7 +81,7 @@ class persistentList {
 //=================A class to compute and store exchaange rates===============
 class exchangeRates {
   constructor() {
-    this.mExchangeRates = new persistentList("exchangeRates");
+    this.mExchangeRates = new persistentDict("exchangeRates",60);
   }
 
   set(from,to,rate){
@@ -476,7 +494,7 @@ function selectDefaultTab(){
 //============================================================================
 //========================Global Variables and Methods========================
 
-var selectedCurrencies = new persistentList("selectedCurrencies");
+var selectedCurrencies = new persistentDict("selectedCurrencies",0);
 var ratesTable = new exchangeRatesTable("ratesTable");
 var rates = new exchangeRates();
 var currencies = new currenciesList(currenciesJSON);
@@ -532,7 +550,6 @@ function addAmountInputListeners(){
   console.log("Add listeners for amounts " + amounts.length);
   for (i = 0; i < amounts.length; i++) {
       addAmountInputListenerToElement(amounts[i]);
-      //amounts[i].addEventListener('keyup',function() {update(event);});
   }
 }
 
