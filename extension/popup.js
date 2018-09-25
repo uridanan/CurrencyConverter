@@ -9,6 +9,10 @@
 //Make sure tab bar is always on top
 //Error 403 probably becasue too many calls, the getRates refactor might actually work
 
+//2 currencies per rwo, not 3
+//buttons always on top, scroll only applies to currencies
+//tweak font size for currency buttons
+//currency button fixed size
 
 //Add expiration to local storage
 //From: https://gist.github.com/anhang/1096149
@@ -21,6 +25,7 @@ class persistentDict {
     this.entries = {};
     this.name = name;
     this.timeout = timeoutMin * 60 * 1000; // save timeout in msec
+    this.load();
   }
 
   add(key,value){
@@ -308,7 +313,7 @@ class currenciesTable{
   }
 
   loadSelectedCurrencies(){
-    selectedCurrencies.load();
+    //selectedCurrencies.load();
     var currencies = selectedCurrencies.getAll();
     if (currencies == undefined){
       return;
@@ -529,7 +534,7 @@ var theCurrenciesTable = new currenciesTable("currenciesTable");
 
 function main(){
   addTabs();
-  theCurrenciesTable.init(3);
+  theCurrenciesTable.init(2);
   addEventListeners();
 }
 
