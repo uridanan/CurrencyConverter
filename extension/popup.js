@@ -35,11 +35,10 @@ class persistentDict {
 
   get(key){
     var entry = this.entries[key];
-    var now =  new Date().getTime();
-    var value = undefined;
-    if(entry != undefined && !this.isExpired(entry["timeout"])){
-      value = entry["value"];
-    }
+    var value = entry.value;
+    //if(entry != undefined && !this.isExpired(entry["timeout"])){
+    //  value = entry["value"];
+    //}
     return value;
   }
 
@@ -54,12 +53,31 @@ class persistentDict {
   }
 
   getAll(){
-    return this.entries;
+    var entries = this.entries;
+    var values = {};
+    for(var e in entries){
+      values[e.value] = e.value;
+    }
+    return values;
   }
 
   save(){
     var json = JSON.stringify(this.entries);
     localStorage.setItem(this.name, json);
+  }
+
+  removeExpiredEntries(){
+    var keys = Object.keys(this.entries);
+    for (var i in keys){
+      this.removeIfExpired(keys[i])
+    }
+  }
+
+  removeIfExpired(key){
+    var entry = this.entries[key];
+    if(this.isExpired(entry.timeout)){
+      this.remove(key);
+    }
   }
 
   load(){
@@ -73,6 +91,8 @@ class persistentDict {
       return;
     }
     this.entries = input;
+
+    this.removeExpiredEntries();
   }
 
 }
@@ -494,7 +514,7 @@ function selectDefaultTab(){
 //============================================================================
 //========================Global Variables and Methods========================
 
-var selectedCurrencies = new persistentDict("selectedCurrencies",0);
+var selectedCurrencies = new persistentDict("selectedCurrencies",1);
 var ratesTable = new exchangeRatesTable("ratesTable");
 var rates = new exchangeRates();
 var currencies = new currenciesList(currenciesJSON);
