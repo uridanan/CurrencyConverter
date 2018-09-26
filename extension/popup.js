@@ -9,7 +9,6 @@
 //Make sure tab bar is always on top
 //Error 403 probably becasue too many calls, the getRates refactor might actually work
 
-//2 currencies per rwo, not 3
 //buttons always on top, scroll only applies to currencies
 //tweak font size for currency buttons
 //currency button fixed size
@@ -178,16 +177,23 @@ class exchangeRatesTable {
   }
 
   addCurrency(symbol){
+    //var inputRow = this.getElement().insertRow(0);
+    //var input = inputRow.insertCell(0);
+    //var currencyRow = this.getElement().insertRow(0);
+    //var currency = currencyRow.insertCell(0);
+    //var name = currencies.getCurrencyDisplayName(symbol);   //TODO: this is not part of the class
     var row = this.getElement().insertRow(0);
-    var input = row.insertCell(0);
-    var currency = row.insertCell(1);
-    var name = currencies.getCurrencyDisplayName(symbol);   //TODO: this is not part of the class
+    var cell = row.insertCell(0);
+    row.className = "exchangeRow";
     row.setAttribute("currency",symbol);
-    currency.innerHTML = symbol+": "+name;
-    input.innerHTML = '<input type="text" class="amount" value="" width="100%">';
+    var currencyString = symbol+": "+name;
+    var inputHTML = '<input type="text" class="amount" value="" width="100%">';
+    cell.innerHTML = currencyString + '<br>' + inputHTML;
+    //currency.innerHTML = symbol+": "+name;
+    //input.innerHTML = '<input type="text" class="amount" value="" width="100%">';
     //input.innerHTML = '<input type="text" class="amount" value="" width="100%" onKeyUp="update()">';
     //Listen to onKeyUp events
-    addAmountInputListenerToElement(input.children[0]);
+    addAmountInputListenerToElement(cell.children[1]);
     //Init value, just in case this happens after the getRate request returns
     this.computeValue(symbol);
   }
@@ -265,9 +271,9 @@ class currenciesList{
   }
 
   getCurrencyDisplayName(id){
-    var symbol = "(" + id + ")";
+    var symbol = " (" + id + ")";
     if (this.currencies[id].currencySymbol != undefined){
-      symbol = "(" + this.currencies[id].currencySymbol + ")";
+      symbol = " (" + this.currencies[id].currencySymbol + ")";
     }
     var name = currenciesJSON[id].currencyName + symbol;
     return name;

@@ -2,7 +2,7 @@ body {
   padding: 0;
   margin: 0;
   font-family: "Arial";
-  width: 400px;
+  width: 297px;
   height: 600px;
 }
 
@@ -17,7 +17,7 @@ body {
 */
 
 table {
-  padding: 3px;
+  padding: 0px;
   border-spacing: 3px;
   font-size: 15px;
   background-color: lightpink;
@@ -40,7 +40,7 @@ input:focus {
 /* Style the tab */
 .tab {
     overflow: hidden;
-    border: 1px solid #ccc;
+    border: 0px solid #ccc;
     background-color: #f1f1f1;
 }
 
@@ -51,9 +51,9 @@ input:focus {
     border: none;
     outline: none;
     cursor: pointer;
-    padding: 14px 16px;
     transition: 0.3s;
     width: 50%;
+    height: 50px;
 }
 
 /* Change background color of buttons on hover */
@@ -69,38 +69,53 @@ input:focus {
 /* Style the tab content */
 .tabcontent {
     display: none;
-    padding: 6px 12px;
-    border: 1px solid #ccc;
+    border: 0px solid #ccc;
     border-top: none;
 }
 
 .currencyBox {
-  width: 100%;
-  padding: 5px;
-  border-spacing: 5px;
+  width: 142px;
+  height: 45px;
+  padding: 2px;
+  border-spacing: 2px;
   border-width: 1px;
   border-color: purple;
   background-color: #f8f8f8;
   color: purple;
-  font-size: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  vertical-align: center;
 }
 
 .selectedCurrencyBox {
-    width: 100%;
-    padding: 5px;
+    width: 142px;
+    height: 45px;
+    padding: 2px;
+    border-spacing: 2px;
     border-width: 1px;
     border-color: green;
     background-color: green;
     color: white;
-    font-size: 15px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: left;
+    vertical-align: center;
 }
 
 .currencySymbol {
-    font-size: 15px;
+    font-size: 12px;
     font-weight: bold;
 }
 
 .currencyName {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: normal;
+}
+
+.exchangeRow {
+  width: 100%;
+  padding: 10px;
 }
