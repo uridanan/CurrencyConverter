@@ -2,8 +2,8 @@ body {
   padding: 0;
   margin: 0;
   font-family: "Arial";
-  width: 297px;
-  height: 600px;
+  width: 317px;
+  /*height: 400px;*/
 }
 
 /*
@@ -72,6 +72,8 @@ input:focus {
     display: none;
     border: 0px solid #ccc;
     border-top: none;
+    overflow-y: auto;
+    height:400px;
 }
 
 .currencyBox {

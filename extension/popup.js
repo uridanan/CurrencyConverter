@@ -8,7 +8,7 @@
 //Search currencies
 //Improve layout
 //Colors
-//buttons always on top, scroll only applies to currencies
+
 
 
 //Add expiration to local storage
