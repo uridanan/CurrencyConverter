@@ -28,9 +28,22 @@ class persistentDict {
     this.load();
   }
 
+  now(){
+    return new Date().getTime();
+  }
+
+  getTimeout(){
+    if(this.timeout == 0){
+      return 0;
+    }
+    else{
+      return this.now() + this.timeout;
+    }
+  }
+
   add(key,value){
     var entry = {};
-    var timeout = new Date().getTime() + this.timeout;
+    var timeout = this.getTimeout();
     entry["value"] = value;
     entry["timeout"] = timeout;
     this.entries[key] = entry;
@@ -47,7 +60,7 @@ class persistentDict {
   }
 
   isExpired(timeout){
-    var now =  new Date().getTime();
+    var now =  this.now();
     return (timeout > 0 && now > timeout);
   }
 
