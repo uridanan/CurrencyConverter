@@ -4,14 +4,12 @@
 //============================================================================
 //============================================================================
 // TODO:
-//Improve layout
-//Search currencies
-//Make sure tab bar is always on top
 //Error 403 probably becasue too many calls, the getRates refactor might actually work
-
+//Search currencies
+//Improve layout
+//Colors
 //buttons always on top, scroll only applies to currencies
-//tweak font size for currency buttons
-//currency button fixed size
+
 
 //Add expiration to local storage
 //From: https://gist.github.com/anhang/1096149
@@ -177,19 +175,15 @@ class exchangeRatesTable {
   }
 
   addCurrency(symbol){
-    //var inputRow = this.getElement().insertRow(0);
-    //var input = inputRow.insertCell(0);
-    //var currencyRow = this.getElement().insertRow(0);
-    //var currency = currencyRow.insertCell(0);
-    //var name = currencies.getCurrencyDisplayName(symbol);   //TODO: this is not part of the class
+    //Insert the actual row
+    var name = currencies.getCurrencyDisplayName(symbol);
     var row = this.getElement().insertRow(0);
     var cell = row.insertCell(0);
-    row.className = "exchangeRow";
     row.setAttribute("currency",symbol);
-    var currencyString = symbol+": "+name;
-    var inputHTML = '<input type="text" class="amount" value="" width="100%">';
+    cell.className = "exchangeCell";
+    var currencyString = name; //symbol+": "+name;
+    var inputHTML = '<input type="text" class="amount" value="">';
     cell.innerHTML = currencyString + '<br>' + inputHTML;
-    //currency.innerHTML = symbol+": "+name;
     //input.innerHTML = '<input type="text" class="amount" value="" width="100%">';
     //input.innerHTML = '<input type="text" class="amount" value="" width="100%" onKeyUp="update()">';
     //Listen to onKeyUp events
@@ -229,7 +223,7 @@ class exchangeRatesTable {
 
   setValue(symbol,value){
     var row = this.getCurrencyRow(symbol);
-    row.children[0].children[0].value = value.toFixed(2);
+    row.children[0].children[1].value = value.toFixed(2);
   }
 
   computeValueForActiveCurrency(baseCurrency, targetCurrency){

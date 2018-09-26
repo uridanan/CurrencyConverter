@@ -17,6 +17,7 @@ body {
 */
 
 table {
+  width: 100%;
   padding: 0px;
   border-spacing: 3px;
   font-size: 15px;
@@ -102,7 +103,6 @@ input:focus {
     overflow: hidden;
     white-space: nowrap;
     text-align: left;
-    vertical-align: center;
 }
 
 .currencySymbol {
@@ -115,7 +115,12 @@ input:focus {
   font-weight: normal;
 }
 
-.exchangeRow {
+.amount {
   width: 100%;
-  padding: 10px;
+  text-align: right;
+}
+
+.exchangeCell {
+  width: 100%;
+  padding: 15px;
 }
