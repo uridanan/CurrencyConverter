@@ -6,7 +6,7 @@
 //============================================================================
 // TODO:
 //Error 403 probably becasue too many calls, the getRates refactor might actually work
-//Search currencies
+//Search currencies listener and scroll
 
 //============================================================================
 //===============A class to store the selected currencies=====================

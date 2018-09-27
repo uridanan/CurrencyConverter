@@ -138,3 +138,17 @@ input:focus {
   font-size: 16px;
   color: purple;
 }
+
+input#filter{
+  width: 250px;
+  margin: 5px;
+  padding: 10px;
+  padding-left: 30px;
+  border: 0px;
+  outline: 0px;
+  border-color: purple;
+  background-image: url('search.png');
+  background-repeat: no-repeat;
+  background-size: 15px 15px;
+  background-position: 5px;
+}
