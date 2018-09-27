@@ -1,18 +1,12 @@
 //popup.js
 //https://free.currencyconverterapi.com/api/v5/convert?q=EUR_USD&compact=y
+//Expiration for local storage: https://gist.github.com/anhang/1096149
 
 //============================================================================
 //============================================================================
 // TODO:
 //Error 403 probably becasue too many calls, the getRates refactor might actually work
 //Search currencies
-//Improve layout
-//Colors
-
-
-
-//Add expiration to local storage
-//From: https://gist.github.com/anhang/1096149
 
 //============================================================================
 //===============A class to store the selected currencies=====================

@@ -42,7 +42,8 @@ input:focus {
 .tab {
     overflow: hidden;
     border: 0px solid #ccc;
-    background-color: #f1f1f1;
+    /*background-color: #f1f1f1;*/
+    background-color: purple;
 }
 
 /* Style the buttons that are used to open the tab content */
@@ -55,12 +56,15 @@ input:focus {
     transition: 0.3s;
     width: 50%;
     height: 50px;
-    font-size: 13px;
+    font-size: 11px;
+    color: white;
 }
 
 /* Change background color of buttons on hover */
 .tab button:hover {
-    background-color: #ddd;
+    /*background-color: #ddd;*/
+    background-color: purple;
+    color: white;
 }
 
 /* Create an active/current tablink class */
@@ -68,7 +72,7 @@ input:focus {
     /*background-color: #ccc;*/
     background-color: purple;
     color: white;
-    font-size: 17px;
+    font-size: 19px;
 }
 
 /* Style the tab content */
@@ -86,9 +90,9 @@ input:focus {
   padding: 2px;
   border-spacing: 2px;
   border-width: 1px;
-  border-color: purple;
+  border-color: #f1f1f1;
   background-color: #f8f8f8;
-  color: purple;
+  color: #676a69;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -102,9 +106,9 @@ input:focus {
     padding: 2px;
     border-spacing: 2px;
     border-width: 1px;
-    border-color: green;
-    background-color: green;
-    color: white;
+    border-color: #a8ffa2;
+    background-color: #a8ffa9;
+    color: #676a69;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -124,9 +128,13 @@ input:focus {
 .amount {
   width: 100%;
   text-align: right;
+  font-size: 16px;
+  color: #525252;
 }
 
 .exchangeCell {
   width: 100%;
   padding: 15px;
+  font-size: 16px;
+  color: purple;
 }
