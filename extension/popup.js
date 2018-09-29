@@ -6,9 +6,11 @@
 //============================================================================
 // TODO:
 //Error 403 probably becasue too many calls, the getRates refactor might actually work
-//Search currencies scroll
-//Icon + Package
+//Find better purple
+//Find better icon
+//Package extension
 //Marketing Page
+//Publish
 
 //============================================================================
 //===============A class to store the selected currencies=====================
