@@ -6,7 +6,9 @@
 //============================================================================
 // TODO:
 //Error 403 probably becasue too many calls, the getRates refactor might actually work
-//Search currencies listener and scroll
+//Search currencies scroll
+//Icon + Package
+//Marketing Page
 
 //============================================================================
 //===============A class to store the selected currencies=====================
@@ -281,6 +283,8 @@ class currenciesList{
 class currenciesTable{
   constructor(id){
     this.id = id;
+    this.buttons = {};
+    this.rowSize = 0;
   }
 
   getElement(){
@@ -288,15 +292,13 @@ class currenciesTable{
   }
 
   init(rowSize){
-    this.generateTable(rowSize);
+    this.rowSize = rowSize;
+    this.initCurrencyButtons();
+    this.showTable("");
     this.loadSelectedCurrencies();
   }
 
-  generateTable(rowSize){
-    var table = this.getElement();
-    var rowIndex = 0;
-    var cellIndex = 0;
-    var row = table.insertRow(rowIndex++); //init table with first row
+  initCurrencyButtons(){
     var keys = currencies.getAll();
     for (var i in keys) {
       //Option element is to create a dropdown
@@ -305,16 +307,30 @@ class currenciesTable{
       //option.text = currenciesJSON[currency].name;
       //select_currency.appendChild(option);
       var currency = keys[i];
-      var cSymbol = currency;
-      var cName = currencies.getCurrencyName(currency);
+      var button = new currencyButton("fromSymbol",currency);
+      this.buttons[i] = button;
+    }
+  }
 
-      var cell = row.insertCell(cellIndex++);
-      var button = new currencyButton("fromSymbol",cSymbol);
-      cell.appendChild(button.instance());
+  refreshTable(filter){
+    this.clearTable();
+    this.showTable(filter);
+  }
 
-      if(cellIndex == rowSize){
-        row = table.insertRow(rowIndex++);
-        cellIndex = 0;
+  showTable(filter){
+    var table = this.getElement();
+    var rowIndex = 0;
+    var cellIndex = 0;
+    var row = table.insertRow(rowIndex++); //init table with first row
+    for (var i in this.buttons) {
+      var btn = this.buttons[i];
+      if(btn.show(filter)){
+        var cell = row.insertCell(cellIndex++);
+        cell.appendChild(btn.instance());
+        if(cellIndex == this.rowSize){
+          row = table.insertRow(rowIndex++);
+          cellIndex = 0;
+        }
       }
     }
   }
@@ -346,6 +362,20 @@ class currenciesTable{
     btn.select();
   }
 
+  //https://www.w3schools.com/howto/howto_js_filter_lists.asp
+  //https://www.w3schools.com/jquery/jquery_filters.asp
+  //https://www.w3schools.com/jsref/jsref_filter.asp
+  filterCurrencies(filter){
+    this.refreshTable(filter);
+  }
+
+  clearTable(){
+    var table = this.getElement();
+    while (table.firstChild) {
+      table.removeChild(table.firstChild);
+    }
+  }
+
 }
 
 
@@ -358,6 +388,8 @@ class currencyButton{
       btn.value = param;
       btn.setAttribute('selected',0);
       btn.setAttribute('currency',param);
+      var searchTags = param + ';' + currencies.getCurrencyName(param);
+      btn.setAttribute("searchTags",searchTags);
       btn.onclick = toggleSelect;
       btn.innerHTML = this.getCurrencySymbolHTML(param)+"<br>"+this.getCurrencyNameHTML(param);
       this.btn = btn;
@@ -407,6 +439,11 @@ class currencyButton{
       this.btn.setAttribute('selected',0);
       unselectCurrency(this.btn.id);
     }
+  }
+
+  show(filter){
+    var searchTags = this.btn.getAttribute("searchTags");
+    return (searchTags != undefined && searchTags.toLowerCase().indexOf(filter) > -1);
   }
 }
 
@@ -553,6 +590,16 @@ function update(){
   ratesTable.update(event);
 }
 
+function filterCurrencies(e){
+  var input = e.currentTarget;
+  var value = input.value;
+  console.log(value);
+  if(value == undefined){
+    value = "";
+  }
+  theCurrenciesTable.filterCurrencies(value.toLowerCase());
+}
+
 function toggleSelect(){
   //theCurrenciesTable.toggle(this);
   b = new currencyButton("fromButton", this);
@@ -570,6 +617,7 @@ main();
 function addEventListeners(){
   addTabClickListeners();
   addAmountInputListeners();
+  addSearchInputListener();
 }
 
 function addTabClickListeners(){
@@ -593,10 +641,15 @@ function addAmountInputListeners(){
 }
 
 function addAmountInputListenerById(id){
-  var amount = document.getElementsById(id);
+  var amount = document.getElementById(id);
   addAmountInputListenerToElement(amount);
 }
 
 function addAmountInputListenerToElement(e){
   e.addEventListener('keyup',function() {update(event);});
+}
+
+function addSearchInputListener(){
+  var filter = document.getElementById("filter");
+  filter.addEventListener('keyup',function() {filterCurrencies(event);});
 }
