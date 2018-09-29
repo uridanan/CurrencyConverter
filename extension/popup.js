@@ -560,11 +560,34 @@ function showTab(tab) {
     //evt.currentTarget.className += " active";
     document.getElementById(tab.value).style.display = "block";
     tab.className += " active";
+
+    toggleSearchBar(tab);
 }
 
 function selectDefaultTab(){
   var defaultTab = document.getElementById("defaultTab");
   showTab(defaultTab);
+}
+
+
+function hideSearchBar(){
+  var searchBar = document.getElementById("filterBar");
+  searchBar.style.display = "none";
+}
+
+function showSearchBar(){
+  var searchBar = document.getElementById("filterBar");
+  searchBar.style.display = "block";
+}
+
+
+function toggleSearchBar(tab){
+  if(tab.value == "Currencies"){
+    this.showSearchBar();
+  }
+  else{
+    this.hideSearchBar();
+  }
 }
 
 //============================================================================
