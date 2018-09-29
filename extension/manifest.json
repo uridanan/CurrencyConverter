@@ -4,7 +4,7 @@
   "version": "0.1",
   "permissions": ["storage"],
   "browser_action": {
-	   "default_icon": "logo.png",
+	   "default_icon": "cclogo2.png",
      "default_popup": "popup.html"
   },
   "content_scripts": [
