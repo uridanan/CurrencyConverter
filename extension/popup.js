@@ -6,8 +6,7 @@
 //============================================================================
 // TODO:
 //Error 403 probably becasue too many calls, the getRates refactor might actually work
-//Find better purple
-//Find better icon
+//Adaptive height?
 //Package extension
 //Marketing Page
 //Publish

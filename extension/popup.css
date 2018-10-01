@@ -28,14 +28,14 @@ input {
   border: 0;
   outline: 0;
   background: transparent;
-  border-bottom: 1px solid purple;
+  border-bottom: 1px solid #7900cb;
 }
 
 input:focus {
   border: 0;
   outline: 0;
   background: transparent;
-  border-bottom: 2px solid purple;
+  border-bottom: 2px solid #7900cb;
 }
 
 /* Style the tab */
@@ -43,13 +43,12 @@ input:focus {
     overflow: hidden;
     border: 0px solid #ccc;
     /*background-color: #f1f1f1;*/
-    background-color: purple;
+    background-color: #7900cb;
 }
 
 /* Style the buttons that are used to open the tab content */
 .tab button {
     background-color: inherit;
-    float: left;
     border: none;
     outline: none;
     cursor: pointer;
@@ -63,14 +62,14 @@ input:focus {
 /* Change background color of buttons on hover */
 .tab button:hover {
     /*background-color: #ddd;*/
-    background-color: purple;
+    background-color: #7900cb;
     color: white;
 }
 
 /* Create an active/current tablink class */
 .tab button.active {
     /*background-color: #ccc;*/
-    background-color: purple;
+    background-color: #7900cb;
     color: white;
     font-size: 19px;
 }
@@ -81,7 +80,7 @@ input:focus {
     border: 0px solid #ccc;
     border-top: none;
     overflow-y: auto;
-    height:400px;
+    height:300px;
 }
 
 .currencyBox {
@@ -136,7 +135,7 @@ input:focus {
   width: 100%;
   padding: 15px;
   font-size: 16px;
-  color: purple;
+  color: #7900cb;
 }
 
 input#filter{
@@ -146,7 +145,7 @@ input#filter{
   padding-left: 30px;
   border: 0px;
   outline: 0px;
-  border-color: purple;
+  border-color: #7900cb;
   background-image: url('search.png');
   background-repeat: no-repeat;
   background-size: 15px 15px;
