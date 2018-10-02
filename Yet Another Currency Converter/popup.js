@@ -6,7 +6,10 @@
 //============================================================================
 // TODO:
 //Error 403 probably becasue too many calls, the getRates refactor might actually work
+//Refactor tabs
 //Adaptive height?
+//Move symbol to the left of the amounts
+
 //Package extension
 //Marketing Page
 //Publish
