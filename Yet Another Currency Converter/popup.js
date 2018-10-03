@@ -545,29 +545,34 @@ function createTab(name, isDefault){
 }
 
 function showTab(tab) {
-    // Declare all variables
-    var i, tabcontent, tablinks;
 
-    // Get all elements with class="tabcontent" and hide them
-    tabcontent = document.getElementsByClassName("tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-    }
+  if (tab == null || tab == undefined){
+    return;
+  }
+    
+  // Declare all variables
+  var i, tabcontent, tablinks;
 
-    // Get all elements with class="tablinks" and remove the class "active"
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
+  // Get all elements with class="tabcontent" and hide them
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+  }
 
-    // Show the current tab, and add an "active" class to the button that opened the tab
-    //document.getElementById(tabName).style.display = "block";
-    //document.getElementById(evt.currentTarget.value).style.display = "block";
-    //evt.currentTarget.className += " active";
-    document.getElementById(tab.value).style.display = "block";
-    tab.className += " active";
+  // Get all elements with class="tablinks" and remove the class "active"
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
 
-    toggleSearchBar(tab);
+  // Show the current tab, and add an "active" class to the button that opened the tab
+  //document.getElementById(tabName).style.display = "block";
+  //document.getElementById(evt.currentTarget.value).style.display = "block";
+  //evt.currentTarget.className += " active";
+  document.getElementById(tab.value).style.display = "block";
+  tab.className += " active";
+
+  toggleSearchBar(tab);
 }
 
 function selectDefaultTab(){
