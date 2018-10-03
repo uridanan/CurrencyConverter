@@ -539,7 +539,9 @@ function createTab(name, isDefault){
   btn.value = name;
   btn.innerHTML = name;
   //btn.onclick = "showTab(event, 'Currencies')";
-  tabs.appendChild(btn);
+  if (tabs != null && tabs != undefined){
+    tabs.appendChild(btn);
+  }
 }
 
 function showTab(tab) {
