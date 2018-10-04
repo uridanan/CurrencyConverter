@@ -10,9 +10,6 @@
 //Adaptive height?
 //Move symbol to the left of the amounts
 
-//Package extension
-//Marketing Page
-//Publish
 
 //============================================================================
 //===============A class to store the selected currencies=====================
@@ -549,7 +546,7 @@ function showTab(tab) {
   if (tab == null || tab == undefined){
     return;
   }
-    
+
   // Declare all variables
   var i, tabcontent, tablinks;
 
