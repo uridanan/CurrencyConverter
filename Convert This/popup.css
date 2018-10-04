@@ -1,0 +1,70 @@
+body {
+  padding: 0;
+  margin: 0;
+  font-family: "Arial";
+  width: 300px;
+  height: 200px;
+  border: 1px solid #7900cb;
+}
+
+/*
+#contents div {
+    display: none;
+}
+
+#contents div:target {
+    display: block;
+}
+*/
+
+
+input {
+  border: 0;
+  outline: 0;
+  background: transparent;
+  border-bottom: 1px solid #7900cb;
+}
+
+input:focus {
+  border: 0;
+  outline: 0;
+  background: transparent;
+  border-bottom: 2px solid #7900cb;
+}
+
+.currencySymbol {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.currencyName {
+  font-size: 11px;
+  font-weight: normal;
+}
+
+.amount {
+  width: 30%;
+  text-align: right;
+  font-size: 16px;
+  color: #525252;
+}
+
+.currency {
+  width: 70%;
+}
+
+.entry {
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.button {
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  width: 30px;
+  height: 30px;
+}
