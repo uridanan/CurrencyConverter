@@ -50,7 +50,22 @@ input:focus {
 }
 
 .currency {
-  width: 70%;
+  width: 50%;
+  font-size: 16px;
+  float: right;
+  border: 0;
+  outline: 0;
+  border-bottom: 1px solid #7900cb;
+  background-color: white;
+  color: #7900cb;
+  /*
+  border: 1px solid #e4deea;
+  background-color: #e4deea;
+  */
+}
+
+.blank {
+  width: 10%;
 }
 
 .entry {
