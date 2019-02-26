@@ -489,9 +489,10 @@ function getRate(from,to){
   x.send();
 }
 
+//https://free.currencyconverterapi.com/api/v6/convert?q=USD_PHP&compact=ultra&apiKey=d5d573dc5cc6166d39f2
 function getRateRequestURL(from,to){
   var currencyPair = getKey(from,to);
-  var url = "https://free.currencyconverterapi.com/api/v5/convert?q="+currencyPair+"&compact=y";
+  var url = "https://free.currencyconverterapi.com/api/v6/convert?q="+currencyPair+"&compact=y&apiKey=d5d573dc5cc6166d39f2";
   return url;
 }
 
