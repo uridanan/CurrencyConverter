@@ -490,9 +490,11 @@ function getRate(from,to){
 }
 
 //https://free.currencyconverterapi.com/api/v6/convert?q=USD_PHP&compact=ultra&apiKey=d5d573dc5cc6166d39f2
+//https://free.currconv.com/api/v7/convert?q=USD_PHP&compact=ultra&apiKey=10c131196cf28fa2f893
 function getRateRequestURL(from,to){
   var currencyPair = getKey(from,to);
-  var url = "https://free.currencyconverterapi.com/api/v6/convert?q="+currencyPair+"&compact=y&apiKey=d5d573dc5cc6166d39f2";
+  //var url = "https://free.currencyconverterapi.com/api/v6/convert?q="+currencyPair+"&compact=y&apiKey=d5d573dc5cc6166d39f2";
+  var url = "https://free.currconv.com/api/v7/convert?q="+currencyPair+"&compact=y&apiKey=10c131196cf28fa2f893";
   return url;
 }
 
