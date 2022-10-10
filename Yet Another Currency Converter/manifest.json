@@ -1,9 +1,9 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Yet Another Currency Converter",
   "version": "1.4",
-  "permissions": ["storage"],
-  "browser_action": {
+  "permissions": [],
+  "action": {
 	   "default_icon": "cclogo2.png",
      "default_popup": "popup.html"
   }
