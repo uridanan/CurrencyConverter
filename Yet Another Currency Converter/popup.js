@@ -494,7 +494,7 @@ function getRate(from,to){
 function getRateRequestURL(from,to){
   var currencyPair = getKey(from,to);
   //var url = "https://free.currencyconverterapi.com/api/v6/convert?q="+currencyPair+"&compact=y&apiKey=d5d573dc5cc6166d39f2";
-  var url = "https://free.currconv.com/api/v7/convert?q="+currencyPair+"&compact=y&apiKey=10c131196cf28fa2f893";
+  var url = "https://free.currconv.com/api/v7/convert?q="+currencyPair+"&compact=y&apiKey=a8a3e46c73f32758ab66";
   return url;
 }
 
