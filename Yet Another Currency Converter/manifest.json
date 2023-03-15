@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Yet Another Currency Converter",
-  "version": "1.8",
+  "version": "1.9",
   "permissions": [],
   "action": {
 	   "default_icon": "cclogo2.png",
