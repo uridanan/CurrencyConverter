@@ -113,7 +113,7 @@ class persistentDict {
 //=================A class to compute and store exchaange rates===============
 class exchangeRates {
   constructor() {
-    this.mExchangeRates = new persistentDict("exchangeRates",60);
+    this.mExchangeRates = new persistentDict("exchangeRates",60);    
   }
 
   set(from,to,rate){
@@ -473,6 +473,38 @@ function getRates(currency){
 //============================================================================
 //============================================================================
 
+//Get API Key from my github page to avoid resubmitting 
+//the whole extension every time the key is changed (monthly)
+//make sure the response is received before calling getRate()
+class APIKey{
+  constructor(){
+    this.theKey = "NO KEY YET";
+    this.url = "https://uridanan.github.io/yacc.txt";
+  }
+
+  fetch(){    
+    var x = new XMLHttpRequest();
+    x.overrideMimeType('text');  
+    x.open('GET', this.url);
+    x.onreadystatechange = function() {
+      if (x.readyState == 4 && x.status == 200) {
+        //processResponse(x.responseText,from,to);
+        console.log(x.responseText);        
+        this.theKey = x.responseText;
+        deferred_main();
+      }
+    };
+    x.send();
+
+  }
+
+  get(){
+    return this.theKey;
+  }
+}
+
+
+
 //Get exchange rate from api
 function getRate(from,to){
   var url = getRateRequestURL(from,to);
@@ -490,11 +522,11 @@ function getRate(from,to){
 }
 
 //https://free.currencyconverterapi.com/api/v6/convert?q=USD_PHP&compact=ultra&apiKey=d5d573dc5cc6166d39f2
-//https://free.currconv.com/api/v7/convert?q=USD_PHP&compact=ultra&apiKey=10c131196cf28fa2f893
+//https://free.currconv.com/api/v7/convert?q=USD_PHP&compact=ultra&apiKey=8e1a1c280749a344a9c3";
+//Make sure the response from getAPIKey() was received
 function getRateRequestURL(from,to){
   var currencyPair = getKey(from,to);
-  //var url = "https://free.currencyconverterapi.com/api/v6/convert?q="+currencyPair+"&compact=y&apiKey=d5d573dc5cc6166d39f2";
-  var url = "https://free.currconv.com/api/v7/convert?q="+currencyPair+"&compact=y&apiKey=8e1a1c280749a344a9c3";
+  var url = "https://free.currconv.com/api/v7/convert?q="+currencyPair+"&compact=y&apiKey="+theAPIKey.get();
   return url;
 }
 
@@ -609,8 +641,15 @@ var ratesTable = new exchangeRatesTable("ratesTable");
 var rates = new exchangeRates();
 var currencies = new currenciesList(currenciesJSON);
 var theCurrenciesTable = new currenciesTable("currenciesTable");
+var theAPIKey = new APIKey();
 
+//Call getAPIKey on init
 function main(){
+  theAPIKey.fetch();
+}
+
+// Called from the callback in APIKey.fetch()
+function deferred_main(){
   addTabs();
   theCurrenciesTable.init(2);
   addEventListeners();
