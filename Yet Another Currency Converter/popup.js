@@ -490,12 +490,16 @@ class APIKey{
       if (x.readyState == 4 && x.status == 200) {
         //processResponse(x.responseText,from,to);
         console.log(x.responseText);        
-        this.theKey = x.responseText;
+        theAPIKey.set(x.responseText);
         deferred_main();
       }
     };
     x.send();
 
+  }
+
+  set(value){
+    this.theKey = value;
   }
 
   get(){
@@ -645,11 +649,13 @@ var theAPIKey = new APIKey();
 
 //Call getAPIKey on init
 function main(){
+  console.log('Version 2.1');
   theAPIKey.fetch();
 }
 
 // Called from the callback in APIKey.fetch()
 function deferred_main(){
+  console.log(theAPIKey.get());
   addTabs();
   theCurrenciesTable.init(2);
   addEventListeners();
